@@ -1,27 +1,30 @@
 {
   "name": "@aintern/backend",
   "version": "1.0.0",
-  "main": "dist/index.js",
+  "description": "",
   "type": "module",
   "scripts": {
-    "start": "node dist/index.js",
-    "dev": "nodemon",
+    "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "watch": "tsc -w"
+    "start": "node dist/index.js"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
-    "elevenlabs-node": "^1.2.0",
+    "dotenv": "^16.4.1",
+    "elevenlabs-node": "^2.0.2",
     "express": "^4.18.2",
-    "openai": "^4.26.0"
+    "openai": "^4.24.7"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
-    "@types/node": "^20.11.16",
-    "nodemon": "^3.0.1",
+    "@types/node": "^20.11.7",
+    "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
+    "tsx": "^4.7.0",
     "typescript": "^5.3.3"
   }
 }
