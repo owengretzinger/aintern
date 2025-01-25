@@ -13,7 +13,7 @@ export const chatRouter = router({
       z.object({
         message: z.string(),
         sessionId: z.string().default("default"),
-      }),
+      })
     )
     .mutation(async ({ input }) => {
       const { message: userMessage, sessionId } = input;
@@ -23,10 +23,9 @@ export const chatRouter = router({
       }
 
       const completion = await openai.chat.completions.create({
-        model: "gpt-4",
+        model: "gpt-4o-mini", // do not change
         max_tokens: 1000,
         temperature: 0.6,
-        response_format: { type: "json_object" },
         messages: [
           {
             role: "system",

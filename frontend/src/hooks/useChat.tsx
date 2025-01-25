@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { trpc } from "../utils/trpc";
+import { trpcReact } from "../trpc/trpc-react";
 import type { Message } from "../../../backend/src/types/shared";
 
 interface ChatContextType {
@@ -23,7 +23,7 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
   const [message, setMessage] = useState<Message | null>(null);
   const [cameraZoomed, setCameraZoomed] = useState(true);
 
-  const chatMutation = trpc.chat.chat.useMutation({
+  const chatMutation = trpcReact.chat.chat.useMutation({
     onSuccess: (data) => {
       setMessages((prev) => [...prev, ...data.messages]);
       setIsLoading(false);

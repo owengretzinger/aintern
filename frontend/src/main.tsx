@@ -10,11 +10,10 @@ if (!rootElement) throw new Error("Failed to find the root element");
 
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
-    <ChatProvider>
-      <TRPCProvider>
+    <TRPCProvider>
+      <ChatProvider>
         <App />
-      </TRPCProvider>
-      <App />
-    </ChatProvider>
-  </React.StrictMode>,
+      </ChatProvider>
+    </TRPCProvider>
+  </React.StrictMode>
 );

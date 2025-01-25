@@ -11,6 +11,15 @@ app.use(express.json());
 app.use(cors());
 const port = 3000;
 
+// Add test route
+app.get("/", (req, res) => {
+  res.json({
+    status: "ok",
+    message: "Backend is running!",
+    timestamp: new Date().toISOString(),
+  });
+});
+
 const appRouter = router({
   chat: chatRouter,
 });
@@ -21,7 +30,7 @@ app.use(
   "/trpc",
   trpcExpress.createExpressMiddleware({
     router: appRouter,
-  }),
+  })
 );
 
 app.listen(port, () => {

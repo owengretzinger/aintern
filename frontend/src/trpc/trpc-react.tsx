@@ -21,12 +21,15 @@ function getQueryClient() {
   return (clientQueryClientSingleton ??= makeQueryClient());
 }
 function getUrl() {
-  const base = (() => {
-    if (typeof window !== "undefined") return "";
-    if (process.env.BACKEND_URL) return `https://${process.env.BACKEND_URL}`;
-    return "http://127.0.0.1:8000/api/trpc";
-  })();
-  return `${base}/api/trpc`;
+  if (typeof window !== "undefined") {
+    // Browser: use relative URL
+    return "http://localhost:3000/trpc";
+  }
+  // Server: use environment variable or default URL
+  if (process.env.BACKEND_URL) {
+    return `https://${process.env.BACKEND_URL}/trpc`;
+  }
+  return "http://localhost:3000/trpc";
 }
 export function TRPCProvider(
   props: Readonly<{
