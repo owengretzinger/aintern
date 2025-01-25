@@ -11,9 +11,6 @@ importers:
       '@trpc/server':
         specifier: ^10.45.2
         version: 10.45.2
-      axios:
-        specifier: ^1.6.7
-        version: 1.7.9
       cors:
         specifier: ^2.8.5
         version: 2.8.5
@@ -42,6 +39,9 @@ importers:
       '@types/node':
         specifier: ^20.11.7
         version: 20.17.16
+      axios:
+        specifier: ^1.6.7
+        version: 1.7.9
       nodemon:
         specifier: ^3.1.9
         version: 3.1.9
