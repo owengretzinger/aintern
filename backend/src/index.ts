@@ -9,7 +9,20 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+
+// Configure CORS with proper options
+app.use(
+  cors({
+    origin: [
+      "https://aintern.vercel.app", // Production
+      "http://localhost:5173", // Local development
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
 const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
 // Add test route
