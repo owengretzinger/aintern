@@ -15,6 +15,7 @@ app.use(
   cors({
     origin: [
       "https://aintern.vercel.app", // Production
+      "https://aintern-six.vercel.app", // Alternative production URL
       "http://localhost:5173", // Local development
     ],
     credentials: true,
