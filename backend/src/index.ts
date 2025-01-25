@@ -72,7 +72,7 @@ wss.on("connection", (ws) => {
   });
 });
 
-console.log("WebSocket server running on ws://localhost:8080");
+console.log(`WebSocket server running on ws://${process.env.RAILWAY_STATIC_URL || 'localhost'}:8080`);
 
 app.listen(port, () => {
   console.log(`Backend listening on port ${port}`);

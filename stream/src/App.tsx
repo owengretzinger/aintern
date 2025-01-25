@@ -10,7 +10,8 @@ function App() {
 
   useEffect(() => {
     // Initialize WebSocket connection
-    socket.current = new WebSocket('ws://localhost:8080');
+    const serverUrl = process.env.RAILWAY_STATIC_URL ? `wss://${process.env.RAILWAY_STATIC_URL}` : 'ws://localhost:8080';
+    socket.current = new WebSocket(serverUrl);
 
     // Initialize WebRTC peer connection
     peerConnection.current = new RTCPeerConnection({

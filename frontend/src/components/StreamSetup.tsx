@@ -12,7 +12,7 @@ export const StreamSetup = ({ canvasRef }: StreamSetupProps) => {
 
   useEffect(() => {
     // Initialize WebSocket connection
-    socket.current = new WebSocket('ws://localhost:8080');
+    socket.current = new WebSocket(`ws://${process.env.RAILWAY_STATIC_URL || 'localhost'}:8080`);
 
     // Initialize WebRTC peer connection
     peerConnection.current = new RTCPeerConnection({
