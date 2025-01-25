@@ -1,21 +1,24 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
 function App() {
   const peerConnection = useRef<RTCPeerConnection | null>(null);
   const socket = useRef<WebSocket | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [connectionState, setConnectionState] = useState<string>('Disconnected');
-  const [wsState, setWsState] = useState<string>('Connecting...');
+  const [connectionState, setConnectionState] =
+    useState<string>("Disconnected");
+  const [wsState, setWsState] = useState<string>("Connecting...");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Initialize WebSocket connection
-    const serverUrl = process.env.RAILWAY_STATIC_URL ? `wss://${process.env.RAILWAY_STATIC_URL}` : 'ws://localhost:8080';
+    const serverUrl = import.meta.env.VITE_RAILWAY_STATIC_URL
+      ? `wss://${import.meta.env.VITE_RAILWAY_STATIC_URL}`
+      : "ws://localhost:3000";
     socket.current = new WebSocket(serverUrl);
 
     // Initialize WebRTC peer connection
     peerConnection.current = new RTCPeerConnection({
-      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
     });
 
     const pc = peerConnection.current;
@@ -23,14 +26,15 @@ function App() {
 
     // Handle incoming tracks
     pc.ontrack = (event) => {
-      console.log('Received remote track', event.streams[0]);
+      console.log("Received remote track", event.streams[0]);
       if (videoRef.current && videoRef.current.srcObject !== event.streams[0]) {
         videoRef.current.srcObject = event.streams[0];
         videoRef.current.onloadedmetadata = () => {
-          console.log('Video metadata loaded');
-          videoRef.current?.play()
+          console.log("Video metadata loaded");
+          videoRef.current
+            ?.play()
             .then(() => setIsLoading(false))
-            .catch(e => console.error('Error playing video:', e));
+            .catch((e) => console.error("Error playing video:", e));
         };
       }
     };
@@ -50,11 +54,11 @@ function App() {
           try {
             await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
           } catch (e) {
-            console.error('Error adding ICE candidate:', e);
+            console.error("Error adding ICE candidate:", e);
           }
         }
       } catch (e) {
-        console.error('Error handling WebSocket message:', e);
+        console.error("Error handling WebSocket message:", e);
       }
     };
 
@@ -67,26 +71,26 @@ function App() {
 
     // Log connection state changes
     pc.onconnectionstatechange = () => {
-      console.log('Connection state:', pc.connectionState);
+      console.log("Connection state:", pc.connectionState);
       setConnectionState(pc.connectionState);
     };
 
     pc.oniceconnectionstatechange = () => {
-      console.log('ICE connection state:', pc.iceConnectionState);
+      console.log("ICE connection state:", pc.iceConnectionState);
     };
 
     // WebSocket state handlers
     ws.onopen = () => {
-      console.log('WebSocket connected');
-      setWsState('Connected');
+      console.log("WebSocket connected");
+      setWsState("Connected");
     };
 
     ws.onclose = () => {
-      setWsState('Disconnected');
+      setWsState("Disconnected");
     };
 
     ws.onerror = () => {
-      setWsState('Error');
+      setWsState("Error");
     };
 
     // Cleanup

@@ -2,11 +2,10 @@
   "name": "@aintern/backend",
   "version": "1.0.0",
   "description": "",
-  "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "start": "node --experimental-specifier-resolution=node dist/index.js",
+    "start": "node dist/index.js",
     "postinstall": "node scripts/setup-rhubarb.js"
   },
   "keywords": [],

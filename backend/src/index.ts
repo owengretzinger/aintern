@@ -2,10 +2,11 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import * as trpcExpress from "@trpc/server/adapters/express";
-import { chatRouter } from "./routers/chat.js";
-import { meetingRouter } from "./routers/meeting.js";
-import { router } from "./trpc.js";
-import WebSocket, { WebSocket as WSWebSocket } from "ws";
+import { chatRouter } from "./routers/chat";
+import { meetingRouter } from "./routers/meeting";
+import { router } from "./trpc";
+import WebSocket from "ws";
+import http from "http";
 dotenv.config();
 
 const app = express();
@@ -52,13 +53,14 @@ app.use(
   })
 );
 
-// WebSocket server for WebRTC signaling
-const wss = new WebSocket.Server({ port: 8080 });
+const server = http.createServer(app);
 
-wss.on("connection", (ws: WSWebSocket) => {
+const wss = new WebSocket.Server({ server });
+
+wss.on("connection", (ws: WebSocket) => {
   console.log("New WebRTC client connected");
 
-  ws.on("message", (message: WebSocket.Data) => {
+  ws.on("message", (message) => {
     // Forward messages to all other clients
     wss.clients.forEach((client) => {
       if (client !== ws && client.readyState === WebSocket.OPEN) {
@@ -74,10 +76,12 @@ wss.on("connection", (ws: WSWebSocket) => {
 
 console.log(
   `WebSocket server running on ws://${
-    process.env.RAILWAY_STATIC_URL || "localhost"
+    process.env.VITE_RAILWAY_STATIC_URL || "localhost"
   }:8080`
 );
 
-app.listen(port, () => {
+// Change the listen call to use the http server
+server.listen(port, () => {
   console.log(`Backend listening on port ${port}`);
+  console.log(`WebSocket server attached to same port ${port}`);
 });

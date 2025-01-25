@@ -12,7 +12,10 @@ export const StreamSetup = ({ canvasRef }: StreamSetupProps) => {
 
   useEffect(() => {
     // Initialize WebSocket connection
-    socket.current = new WebSocket(`ws://${process.env.RAILWAY_STATIC_URL || 'localhost'}:8080`);
+    const serverUrl = import.meta.env.VITE_RAILWAY_STATIC_URL
+      ? `wss://${import.meta.env.VITE_RAILWAY_STATIC_URL}`
+      : 'ws://localhost:3000';
+    socket.current = new WebSocket(serverUrl);
 
     // Initialize WebRTC peer connection
     peerConnection.current = new RTCPeerConnection({
@@ -105,4 +108,4 @@ export const StreamSetup = ({ canvasRef }: StreamSetupProps) => {
       <div>WebRTC: {connectionState}</div>
     </div>
   );
-}; 
+};
