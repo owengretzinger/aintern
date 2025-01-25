@@ -2,9 +2,9 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import * as trpcExpress from "@trpc/server/adapters/express";
-import { chatRouter } from "./routers/chat";
-import { meetingRouter } from "./routers/meeting";
-import { router } from "./trpc";
+import { chatRouter } from "./routers/chat.js";
+import { meetingRouter } from "./routers/meeting.js";
+import { router } from "./trpc.js";
 dotenv.config();
 
 const app = express();

@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { publicProcedure, router } from "../trpc";
-import { openai, voice } from "../services/ai";
+import { publicProcedure, router } from "../trpc.js";
+import { openai, voice } from "../services/ai.js";
 import {
   audioFileToBase64,
   lipSyncMessage,
   readJsonTranscript,
-} from "../utils";
+} from "../utils.js";
 
 export const chatRouter = router({
   chat: publicProcedure

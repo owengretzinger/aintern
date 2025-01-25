@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { publicProcedure, router } from "../trpc";
-import { createBot, getBotStatus, getBotTranscript } from "../services/recall";
+import { publicProcedure, router } from "../trpc.js";
+import { createBot, getBotStatus, getBotTranscript } from "../services/recall.js";
 
 export const meetingRouter = router({
   createBot: publicProcedure

@@ -18,7 +18,7 @@ export const lipSyncMessage = async (message: number): Promise<void> => {
   );
   console.log(`Conversion done in ${new Date().getTime() - time}ms`);
   await execCommand(
-    `./rhubarb-lip-sync/rhubarb -f json -o audios/message_${message}.json audios/message_${message}.wav -r phonetic`,
+    `./@rhubarb-lip-sync/rhubarb -f json -o audios/message_${message}.json audios/message_${message}.wav -r phonetic`,
   );
   console.log(`Lip sync done in ${new Date().getTime() - time}ms`);
 };

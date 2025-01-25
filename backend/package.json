@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node --experimental-specifier-resolution=node dist/index.js",
+    "postinstall": "node scripts/setup-rhubarb.js"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +25,7 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/node": "^20.11.7",
+    "axios": "^1.6.7",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
     "tsx": "^4.7.0",
