@@ -5,7 +5,7 @@ import * as trpcExpress from "@trpc/server/adapters/express";
 import { chatRouter } from "./routers/chat.js";
 import { meetingRouter } from "./routers/meeting.js";
 import { router } from "./trpc.js";
-const WebSocket = require("ws");
+import WebSocket, { WebSocket as WSWebSocket } from "ws";
 dotenv.config();
 
 const app = express();
@@ -55,10 +55,10 @@ app.use(
 // WebSocket server for WebRTC signaling
 const wss = new WebSocket.Server({ port: 8080 });
 
-wss.on("connection", (ws) => {
+wss.on("connection", (ws: WSWebSocket) => {
   console.log("New WebRTC client connected");
 
-  ws.on("message", (message) => {
+  ws.on("message", (message: WebSocket.Data) => {
     // Forward messages to all other clients
     wss.clients.forEach((client) => {
       if (client !== ws && client.readyState === WebSocket.OPEN) {
@@ -72,7 +72,11 @@ wss.on("connection", (ws) => {
   });
 });
 
-console.log(`WebSocket server running on ws://${process.env.RAILWAY_STATIC_URL || 'localhost'}:8080`);
+console.log(
+  `WebSocket server running on ws://${
+    process.env.RAILWAY_STATIC_URL || "localhost"
+  }:8080`
+);
 
 app.listen(port, () => {
   console.log(`Backend listening on port ${port}`);
