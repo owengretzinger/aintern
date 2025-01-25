@@ -17,8 +17,15 @@
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+
+    /* Paths */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
-  "include": ["src"],
+  "include": ["src/**/*"],
+  "exclude": ["../backend", "../backend/**/*", "node_modules"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

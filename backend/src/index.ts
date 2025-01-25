@@ -13,7 +13,7 @@ app.use(cors());
 const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
 // Add test route
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
   res.json({
     status: "ok",
     message: "Backend is running!",
