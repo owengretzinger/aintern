@@ -26,9 +26,10 @@ RUN mkdir -p audios
 # Set environment variables
 ENV PORT=3000
 ENV NODE_ENV=production
+ENV TYPE=module
 
 # Expose the port
 EXPOSE 3000
 
 # Start the application
-CMD ["npm", "start"] 
+CMD ["npm", "start"]

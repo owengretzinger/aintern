@@ -1,0 +1,24 @@
+curl --request POST \
+     --url https://us-west-2.recall.ai/api/v1/bot/ \
+     --header 'Authorization: 893556a48c77b6b95da2c033d1f5b1b5b51aad8e' \
+     --header 'accept: application/json' \
+     --header 'content-type: application/json' \
+     --data-raw '
+{
+  "meeting_url": "https://meet.google.com/zhw-gbcm-ugw",
+  "bot_name": "Transcript",
+  "output_media": {
+    "camera": {
+      "kind": "webpage",
+      "config": {
+        "url": "https://easy-walrus-dominant.ngrok-free.app"
+      }
+    }
+  },
+  "transcription_options": {
+    "provider": "meeting_captions"
+  },
+  "variant": {
+    "google_meet": "web_4_core"
+  }
+}'

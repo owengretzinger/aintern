@@ -2,11 +2,10 @@
   "name": "@aintern/backend",
   "version": "1.0.0",
   "description": "",
-  "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
-    "start": "node --experimental-specifier-resolution=node dist/index.js",
+    "start": "node dist/index.js",
     "postinstall": "node scripts/setup-rhubarb.js"
   },
   "keywords": [],
@@ -14,11 +13,13 @@
   "license": "ISC",
   "dependencies": {
     "@trpc/server": "^10.45.2",
+    "@types/ws": "^8.5.14",
     "cors": "^2.8.5",
     "dotenv": "^16.4.1",
     "elevenlabs-node": "^2.0.2",
     "express": "^4.18.2",
     "openai": "^4.24.7",
+    "ws": "^8.18.0",
     "zod": "^3.24.1"
   },
   "devDependencies": {

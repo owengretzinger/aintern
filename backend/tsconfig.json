@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "target": "ES2020",
+    "module": "CommonJS",
+    "moduleResolution": "node",
     "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
     "outDir": "dist",
@@ -14,10 +15,12 @@
     },
     "resolveJsonModule": true
   },
-  "include": ["src/**/*"],
+  "include": ["src"],
   "exclude": ["node_modules"],
   "ts-node": {
     "esm": true,
-    "experimentalSpecifierResolution": "node"
+    "experimentalSpecifierResolution": "node",
+    "transpileOnly": true,
+    "files": true
   }
 }
