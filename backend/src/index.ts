@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import express from "express";
 import * as trpcExpress from "@trpc/server/adapters/express";
 import { chatRouter } from "./routers/chat";
+import { meetingRouter } from "./routers/meeting";
 import { router } from "./trpc";
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.get("/", (req, res) => {
 
 const appRouter = router({
   chat: chatRouter,
+  meeting: meetingRouter,
 });
 
 export type AppRouter = typeof appRouter;
