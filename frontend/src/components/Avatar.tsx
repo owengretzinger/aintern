@@ -176,7 +176,7 @@ interface AvatarProps {
 
 export function Avatar(props: AvatarProps) {
   const { nodes, materials, scene } = useGLTF(
-    "/models/64f1a714fe61576b46f27ca2.glb"
+    "/models/64f1a714fe61576b46f27ca2.glb",
   ) as GLTFResult;
 
   const { message, onMessagePlayed, chat } = useChat();
@@ -215,7 +215,7 @@ export function Avatar(props: AvatarProps) {
   const [animation, setAnimation] = useState<ActionName>(
     (animations.find((a: THREE.AnimationClip) => a.name === "Idle")
       ? "Idle"
-      : animations[0].name) as ActionName
+      : animations[0].name) as ActionName,
   );
 
   useEffect(() => {
@@ -248,7 +248,7 @@ export function Avatar(props: AvatarProps) {
         skinnedMesh.morphTargetInfluences[index] = THREE.MathUtils.lerp(
           skinnedMesh.morphTargetInfluences[index],
           value,
-          speed
+          speed,
         );
 
         if (!setupMode) {
@@ -381,20 +381,23 @@ export function Avatar(props: AvatarProps) {
             },
           },
         };
-      })
-    )
+      }),
+    ),
   );
 
   useEffect(() => {
     let blinkTimeout: number;
     const nextBlink = () => {
-      blinkTimeout = window.setTimeout(() => {
-        setBlink(true);
-        setTimeout(() => {
-          setBlink(false);
-          nextBlink();
-        }, 200);
-      }, THREE.MathUtils.randInt(1000, 5000));
+      blinkTimeout = window.setTimeout(
+        () => {
+          setBlink(true);
+          setTimeout(() => {
+            setBlink(false);
+            nextBlink();
+          }, 200);
+        },
+        THREE.MathUtils.randInt(1000, 5000),
+      );
     };
     nextBlink();
     return () => window.clearTimeout(blinkTimeout);

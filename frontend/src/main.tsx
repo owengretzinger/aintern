@@ -16,5 +16,5 @@ ReactDOM.createRoot(rootElement).render(
       </TRPCProvider>
       <App />
     </ChatProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

@@ -1,7 +1,7 @@
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
-import * as trpcExpress from '@trpc/server/adapters/express';
+import * as trpcExpress from "@trpc/server/adapters/express";
 import { chatRouter } from "./routers/chat";
 import { router } from "./trpc";
 dotenv.config();
@@ -18,10 +18,10 @@ const appRouter = router({
 export type AppRouter = typeof appRouter;
 
 app.use(
-  '/trpc',
+  "/trpc",
   trpcExpress.createExpressMiddleware({
     router: appRouter,
-  })
+  }),
 );
 
 app.listen(port, () => {

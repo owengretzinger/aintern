@@ -2,7 +2,13 @@ export interface Message {
   text: string;
   audio?: string;
   lipsync?: any;
-  facialExpression: "smile" | "sad" | "angry" | "surprised" | "funnyFace" | "default";
+  facialExpression:
+    | "smile"
+    | "sad"
+    | "angry"
+    | "surprised"
+    | "funnyFace"
+    | "default";
   animation:
     | "Talking_0"
     | "Talking_1"
@@ -22,4 +28,4 @@ export interface ChatResponse {
 export interface ConversationHistory {
   role: "user" | "assistant" | "system";
   content: string;
-} 
+}

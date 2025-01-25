@@ -13,7 +13,7 @@ export const chatRouter = router({
       z.object({
         message: z.string(),
         sessionId: z.string().default("default"),
-      })
+      }),
     )
     .mutation(async ({ input }) => {
       const { message: userMessage, sessionId } = input;

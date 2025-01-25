@@ -36,7 +36,11 @@ const Dots = ({ position }: DotsProps) => {
   }, [loading]);
   if (!loading) return null;
   return (
-    <group position-x={position?.x} position-y={position?.y} position-z={position?.z}>
+    <group
+      position-x={position?.x}
+      position-y={position?.y}
+      position-z={position?.z}
+    >
       <Text fontSize={0.14} anchorX={"left"} anchorY={"bottom"}>
         {loadingText}
         <meshBasicMaterial attach="material" color="black" />

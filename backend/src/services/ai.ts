@@ -10,7 +10,9 @@ if (!process.env.OPENAI_API_KEY) {
 }
 
 if (!process.env.ELEVEN_LABS_API_KEY) {
-  console.error("Error: ELEVEN_LABS_API_KEY is not set in environment variables");
+  console.error(
+    "Error: ELEVEN_LABS_API_KEY is not set in environment variables",
+  );
   process.exit(1);
 }
 
@@ -23,4 +25,4 @@ export const openai = new OpenAI({
 export const voice = new ElevenLabs({
   apiKey: process.env.ELEVEN_LABS_API_KEY,
   voiceId: VOICE_ID,
-}); 
+});

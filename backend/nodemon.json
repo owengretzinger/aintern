@@ -2,4 +2,4 @@
   "watch": ["src"],
   "ext": ".ts,.js",
   "exec": "node --loader ts-node/esm src/index.ts"
-} 
+}
