@@ -10,6 +10,7 @@ async function setupRhubarb() {
   const os = platform();
   let downloadUrl;
 
+  console.log('os:', os)
   switch (os) {
     case "darwin":
       downloadUrl = `https://github.com/DanielSWolf/rhubarb-lip-sync/releases/download/v${RHUBARB_VERSION}/rhubarb-lip-sync-${RHUBARB_VERSION}-macOS.zip`;
