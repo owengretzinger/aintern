@@ -1,7 +1,7 @@
 import { exec } from "child_process";
 import cors from "cors";
 import dotenv from "dotenv";
-import voice from "elevenlabs-node";
+import ElevenLabs from "elevenlabs-node";
 import express, { Request, Response } from "express";
 import { promises as fs } from "fs";
 import OpenAI from "openai";
@@ -19,12 +19,16 @@ if (!process.env.ELEVEN_LABS_API_KEY) {
   process.exit(1);
 }
 
+const VOICE_ID = "cgSgspJ2msm6clMCkdW9";
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const elevenLabsApiKey = process.env.ELEVEN_LABS_API_KEY;
-const voiceID = "kgG7dCoKCfLehAPWkJOE";
+const voice = new ElevenLabs({
+  apiKey: process.env.ELEVEN_LABS_API_KEY,
+  voiceId: VOICE_ID,
+});
 
 const app = express();
 app.use(express.json());
@@ -63,7 +67,12 @@ app.get("/", (_req: Request, res: Response) => {
 });
 
 app.get("/voices", async (_req: Request, res: Response) => {
-  res.send(await voice.getVoices(elevenLabsApiKey));
+  try {
+    const voices = await voice.getVoices();
+    res.send(voices);
+  } catch (error) {
+    res.status(500).send({ error: "Failed to fetch voices" });
+  }
 });
 
 const execCommand = (command: string): Promise<string> => {
@@ -83,7 +92,7 @@ const lipSyncMessage = async (message: number): Promise<void> => {
   );
   console.log(`Conversion done in ${new Date().getTime() - time}ms`);
   await execCommand(
-    `./bin/rhubarb -f json -o audios/message_${message}.json audios/message_${message}.wav -r phonetic`
+    `./rhubarb-lip-sync/rhubarb -f json -o audios/message_${message}.json audios/message_${message}.wav -r phonetic`
   );
   console.log(`Lip sync done in ${new Date().getTime() - time}ms`);
 };
@@ -107,7 +116,8 @@ app.post("/chat", async (req: Request, res: Response) => {
         role: "system",
         content: `
         You are an AI intern assistant.
-        You will always reply with a JSON array of messages. With a maximum of 3 messages.
+        You will reply with a JSON array of messages. Only use multiple messages when the response naturally requires separate statements or emotions.
+        Most responses should be a single message unless there's a clear reason to split them.
         Each message has a text, facialExpression, and animation property.
         The different facial expressions are: smile, sad, angry, surprised, funnyFace, and default.
         The different animations are: Talking_0, Talking_1, Talking_2, Crying, Laughing, Rumba, Idle, Terrified, and Angry. 
@@ -131,7 +141,18 @@ app.post("/chat", async (req: Request, res: Response) => {
     const message = messages[i];
     const fileName = `audios/message_${i}.mp3`;
     const textInput = message.text;
-    await voice.textToSpeech(elevenLabsApiKey, voiceID, fileName, textInput);
+
+    await voice.textToSpeech({
+      fileName,
+      textInput,
+      voiceId: VOICE_ID,
+      stability: 0.5,
+      similarityBoost: 0.5,
+      modelId: "eleven_multilingual_v2",
+      style: 0,
+      speakerBoost: true,
+    });
+
     await lipSyncMessage(i);
     message.audio = await audioFileToBase64(fileName);
     message.lipsync = await readJsonTranscript(`audios/message_${i}.json`);
