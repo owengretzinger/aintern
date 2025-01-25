@@ -16,7 +16,7 @@ export const chatRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      const { message: userMessage, sessionId } = input;
+      const { message: userMessage } = input;
 
       if (!userMessage) {
         throw new Error("No message provided");

@@ -3,7 +3,7 @@ import { promises as fs } from "fs";
 
 export const execCommand = (command: string): Promise<string> => {
   return new Promise((resolve, reject) => {
-    exec(command, (error, stdout, stderr) => {
+    exec(command, (error, stdout, _stderr) => {
       if (error) reject(error);
       resolve(stdout);
     });

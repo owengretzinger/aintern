@@ -9,11 +9,27 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(cors());
-const port = 3000;
+
+// Configure CORS with proper options
+app.use(
+  cors({
+    origin: [
+      "https://aintern.vercel.app", // Production
+      "https://aintern-six.vercel.app", // Alternative production URL
+      "http://localhost:5173", // Local development
+      "https://easy-walrus-dominant.ngrok-free.app", // Specific ngrok tunnel
+      /^https:\/\/.*\.ngrok-free\.app$/, // Any ngrok-free.app subdomain
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
 // Add test route
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
   res.json({
     status: "ok",
     message: "Backend is running!",

@@ -21,20 +21,14 @@ function getQueryClient() {
   return (clientQueryClientSingleton ??= makeQueryClient());
 }
 function getUrl() {
-  if (typeof window !== "undefined") {
-    // Browser: use relative URL
-    return "http://localhost:3000/trpc";
-  }
-  // Server: use environment variable or default URL
-  if (process.env.BACKEND_URL) {
-    return `https://${process.env.BACKEND_URL}/trpc`;
-  }
-  return "http://localhost:3000/trpc";
+  const backendUrl =
+    import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+  return `${backendUrl}/trpc`;
 }
 export function TRPCProvider(
   props: Readonly<{
     children: React.ReactNode;
-  }>,
+  }>
 ) {
   // NOTE: Avoid useState when initializing the query client if you don't
   //       have a suspense boundary between this and the code that may
@@ -48,7 +42,7 @@ export function TRPCProvider(
           url: getUrl(),
         }),
       ],
-    }),
+    })
   );
   return (
     <trpcReact.Provider client={trpcClient} queryClient={queryClient}>

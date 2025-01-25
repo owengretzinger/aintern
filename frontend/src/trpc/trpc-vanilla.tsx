@@ -4,7 +4,9 @@ import { AppRouter } from "../../../backend/src";
 export const trpcVanilla = createTRPCProxyClient<AppRouter>({
   links: [
     httpBatchLink({
-      url: process.env.BACKEND_URL ?? "http://127.0.0.1:8000/api/trpc",
+      url: `${
+        import.meta.env.VITE_BACKEND_URL || "http://localhost:3000"
+      }/trpc`,
       // You can pass any HTTP headers you wish here
       // async headers() {
       //   return {
