@@ -62,6 +62,14 @@ interface ChatResponse {
   messages: Message[];
 }
 
+interface ConversationHistory {
+  role: "user" | "assistant" | "system";
+  content: string;
+}
+
+// Store conversation history in memory
+const conversationHistories = new Map<string, ConversationHistory[]>();
+
 app.get("/", (_req: Request, res: Response) => {
   res.send("Hello World!");
 });
@@ -99,19 +107,16 @@ const lipSyncMessage = async (message: number): Promise<void> => {
 
 app.post("/chat", async (req: Request, res: Response) => {
   const userMessage = req.body.message;
+  const sessionId = req.body.sessionId || "default"; // Use a session ID to track different conversations
+
   if (!userMessage) {
     res.status(400).send({ error: "No message provided" });
     return;
   }
 
-  const completion = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    max_tokens: 1000,
-    temperature: 0.6,
-    response_format: {
-      type: "json_object",
-    },
-    messages: [
+  // Initialize or get conversation history
+  if (!conversationHistories.has(sessionId)) {
+    conversationHistories.set(sessionId, [
       {
         role: "system",
         content: `
@@ -123,11 +128,25 @@ app.post("/chat", async (req: Request, res: Response) => {
         The different animations are: Talking_0, Talking_1, Talking_2, Crying, Laughing, Rumba, Idle, Terrified, and Angry. 
         `,
       },
-      {
-        role: "user",
-        content: userMessage || "Hello",
-      },
-    ],
+    ]);
+  }
+
+  const history = conversationHistories.get(sessionId)!;
+  
+  // Add user message to history
+  history.push({
+    role: "user",
+    content: userMessage,
+  });
+
+  const completion = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    max_tokens: 1000,
+    temperature: 0.6,
+    response_format: {
+      type: "json_object",
+    },
+    messages: history,
   });
 
   let messages: Message[] = JSON.parse(
@@ -135,6 +154,17 @@ app.post("/chat", async (req: Request, res: Response) => {
   );
   if ((messages as any).messages) {
     messages = (messages as any).messages;
+  }
+
+  // Add assistant's response to history
+  history.push({
+    role: "assistant",
+    content: completion.choices[0].message.content || "",
+  });
+
+  // Trim history if it gets too long (keep last 20 messages)
+  if (history.length > 21) { // 20 messages + system prompt
+    history.splice(1, history.length - 21);
   }
 
   for (let i = 0; i < messages.length; i++) {

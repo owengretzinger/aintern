@@ -24,6 +24,9 @@ interface ChatContextType {
 
 const backendUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
+// Generate a random session ID when the app starts
+const sessionId = Math.random().toString(36).substring(7);
+
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
 interface ChatProviderProps {
@@ -38,7 +41,7 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ message }),
+      body: JSON.stringify({ message, sessionId }),
     });
     const resp = (await data.json()).messages;
     setMessages((messages) => [...messages, ...resp]);
