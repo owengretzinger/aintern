@@ -1,13 +1,16 @@
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
-import * as trpcExpress from "@trpc/server/adapters/express";
-import { chatRouter } from "./routers/chat";
-import { meetingRouter } from "./routers/meeting";
-import { router } from "./trpc";
 import WebSocket from "ws";
 import http from "http";
+import OpenAI from "openai";
+import { chatRouter } from "./routers/chat";
+import { meetingRouter } from "./routers/meeting";
 dotenv.config();
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 const app = express();
 app.use(express.json());
@@ -40,38 +43,68 @@ app.get("/", (_req, res) => {
   });
 });
 
-const appRouter = router({
-  chat: chatRouter,
-  meeting: meetingRouter,
-});
+// Mount routers
+app.use("/api/chat", chatRouter);
+app.use("/api/meeting", meetingRouter);
 
-export type AppRouter = typeof appRouter;
-
-app.use(
-  "/trpc",
-  trpcExpress.createExpressMiddleware({
-    router: appRouter,
-  })
-);
-
+// Create HTTP server
 const server = http.createServer(app);
 
+// Create WebSocket server
 const wss = new WebSocket.Server({ server });
 
-wss.on("connection", (ws: WebSocket) => {
-  console.log("New WebRTC client connected");
+// Store connected clients
+const clients = new Set<WebSocket>();
 
-  ws.on("message", (message) => {
-    // Forward messages to all other clients
-    wss.clients.forEach((client) => {
-      if (client !== ws && client.readyState === WebSocket.OPEN) {
-        client.send(message);
+// WebSocket connection handler
+wss.on("connection", (ws) => {
+  clients.add(ws);
+
+  ws.on("message", async (message) => {
+    try {
+      const data = JSON.parse(message.toString());
+
+      // If this is a transcript message
+      if (data.transcript) {
+        const transcriptText =
+          data.transcript.words?.map((w: any) => w.text).join(" ") || "";
+
+        // Check for wake word
+        if (transcriptText.toLowerCase().includes("alexa")) {
+          // Use chat endpoint directly
+          const response = await fetch("http://localhost:" + port + "/api/chat/chat", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              message: transcriptText,
+              sessionId: "default",
+            }),
+          });
+          
+          const chatResponse = await response.json();
+
+          // Broadcast response to all connected clients
+          clients.forEach((client) => {
+            if (client.readyState === WebSocket.OPEN) {
+              client.send(
+                JSON.stringify({
+                  type: "ai_response",
+                  messages: chatResponse.messages,
+                })
+              );
+            }
+          });
+        }
       }
-    });
+    } catch (error) {
+      console.error("Error processing WebSocket message:", error);
+    }
   });
 
   ws.on("close", () => {
-    console.log("WebRTC client disconnected");
+    clients.delete(ws);
   });
 });
 

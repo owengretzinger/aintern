@@ -1,5 +1,4 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { trpcReact } from "../trpc/trpc-react";
 import type { Message } from "../../../backend/src/types/shared";
 
 interface ChatContextType {
@@ -23,20 +22,28 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
   const [message, setMessage] = useState<Message | null>(null);
   const [cameraZoomed, setCameraZoomed] = useState(true);
 
-  const chatMutation = trpcReact.chat.chat.useMutation({
-    onSuccess: (data) => {
-      setMessages((prev) => [...prev, ...data.messages]);
-      setIsLoading(false);
-    },
-    onError: (error) => {
-      console.error("Error sending message:", error);
-      setIsLoading(false);
-    },
-  });
-
   const sendMessage = async (message: string) => {
     setIsLoading(true);
-    chatMutation.mutate({ message });
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:3001"}/api/chat/chat`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message }),
+      });
+      
+      if (!response.ok) {
+        throw new Error("Failed to send message");
+      }
+
+      const data = await response.json();
+      setMessages((prev) => [...prev, ...data.messages]);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {

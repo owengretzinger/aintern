@@ -1,7 +1,6 @@
 import { useState } from "react";
 import "./App.css";
 import { VideoRoom } from "./components/VideoRoom";
-import { Transcript } from "./components/Transcript";
 
 function App() {
   // const [joined, setJoined] = useState(false);
@@ -23,7 +22,6 @@ function App() {
             To Lobby
           </button> */}
           <VideoRoom />
-          <Transcript />
         </>
       )}
     </div>

@@ -34,6 +34,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 export const useTranscriptWebSocket = (viewOnly = false) => {
   const RECONNECT_RETRY_INTERVAL_MS = 3000;
   const wsRef = useRef(null);
+  const backendWsRef = useRef(null);
   const retryIntervalRef = useRef(null);
 
   const [finalizedUtterances, setFinalizedUtterances] = useState([]);
@@ -44,6 +45,12 @@ export const useTranscriptWebSocket = (viewOnly = false) => {
 
     wsRef.current = new WebSocket(
       "wss://meeting-data.bot.recall.ai/api/v1/transcript"
+    );
+
+    // Connect to backend WebSocket
+    console.log(import.meta.env.VITE_BACKEND_WS_URL);
+    backendWsRef.current = new WebSocket(
+      `wss://${import.meta.env.VITE_BACKEND_WS_URL || "ws://localhost:3000"}`
     );
 
     wsRef.current.onopen = () => {
@@ -57,6 +64,12 @@ export const useTranscriptWebSocket = (viewOnly = false) => {
     wsRef.current.onmessage = async (event) => {
       try {
         const message = JSON.parse(event.data);
+
+        // Forward transcript to backend
+        if (backendWsRef.current?.readyState === WebSocket.OPEN) {
+          backendWsRef.current.send(JSON.stringify(message));
+        }
+
         const transcript = message.transcript;
         const text = transcript.words.map((word) => word.text).join(" ");
 

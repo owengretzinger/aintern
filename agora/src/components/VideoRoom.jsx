@@ -30,7 +30,7 @@ const createAgoraClient = ({ onVideoTrack, onUserDisconnected }) => {
     });
   };
 
-  const connect = async (viewOnly) => {
+  const connect = async (isViewOnly) => {
     await waitForConnectionState("DISCONNECTED");
 
     const uid = await client.join(APP_ID, CHANNEL, TOKEN, null);
@@ -47,7 +47,7 @@ const createAgoraClient = ({ onVideoTrack, onUserDisconnected }) => {
       onUserDisconnected(user);
     });
 
-    if (viewOnly) {
+    if (isViewOnly) {
       tracks = await AgoraRTC.createMicrophoneAndCameraTracks();
     } else {
       try {
@@ -91,7 +91,7 @@ const createAgoraClient = ({ onVideoTrack, onUserDisconnected }) => {
 export const VideoRoom = () => {
   const [users, setUsers] = useState([]);
   const [uid, setUid] = useState(null);
-  const [viewOnly, setViewOnly] = useState(false);
+  const [isViewOnly, setIsViewOnly] = useState(false);
 
   useEffect(() => {
     const onVideoTrack = (user) => {
@@ -112,7 +112,7 @@ export const VideoRoom = () => {
     const setup = async () => {
       const queryParams = new URLSearchParams(window.location.search);
       const isViewOnly = queryParams.get("viewOnly") === "true";
-      setViewOnly(isViewOnly);
+      setIsViewOnly(isViewOnly);
 
       console.log("viewOnly:", isViewOnly);
       const { tracks, uid } = await connect(isViewOnly);
@@ -161,7 +161,7 @@ export const VideoRoom = () => {
         ))}
         {/* </div> */}
       </div>
-      <Transcript viewOnly={viewOnly} />
+      <Transcript isViewOnly={isViewOnly} />
     </div>
   );
 };

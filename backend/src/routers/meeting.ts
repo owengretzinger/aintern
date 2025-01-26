@@ -1,38 +1,52 @@
+import express from "express";
 import { z } from "zod";
-import { publicProcedure, router } from "../trpc.js";
 import { createBot, getBotStatus, getBotTranscript } from "../services/recall.js";
 
-export const meetingRouter = router({
-  createBot: publicProcedure
-    .input(
-      z.object({
-        meetingUrl: z.string(),
-      })
-    )
-    .mutation(async ({ input }) => {
-      const { meetingUrl } = input;
-      return await createBot(meetingUrl);
-    }),
+const router = express.Router();
 
-  getBotStatus: publicProcedure
-    .input(
-      z.object({
-        botId: z.string(),
-      })
-    )
-    .query(async ({ input }) => {
-      const { botId } = input;
-      return await getBotStatus(botId);
-    }),
+router.post("/create-bot", async (req, res) => {
+  try {
+    const schema = z.object({
+      meetingUrl: z.string(),
+    });
 
-  getBotTranscript: publicProcedure
-    .input(
-      z.object({
-        botId: z.string(),
-      })
-    )
-    .query(async ({ input }) => {
-      const { botId } = input;
-      return await getBotTranscript(botId);
-    }),
+    const { meetingUrl } = schema.parse(req.body);
+    const result = await createBot(meetingUrl);
+    res.json(result);
+  } catch (error: any) {
+    console.error("Error creating bot:", error);
+    res.status(500).json({ error: error.message || "Internal server error" });
+  }
 });
+
+router.get("/bot-status/:botId", async (req, res) => {
+  try {
+    const schema = z.object({
+      botId: z.string(),
+    });
+
+    const { botId } = schema.parse(req.params);
+    const result = await getBotStatus(botId);
+    res.json(result);
+  } catch (error: any) {
+    console.error("Error getting bot status:", error);
+    res.status(500).json({ error: error.message || "Internal server error" });
+  }
+});
+
+router.get("/bot-transcript/:botId", async (req, res) => {
+  try {
+    const schema = z.object({
+      botId: z.string(),
+    });
+
+    const { botId } = schema.parse(req.params);
+    const result = await getBotTranscript(botId);
+    res.json(result);
+  } catch (error: any) {
+    console.error("Error getting bot transcript:", error);
+    res.status(500).json({ error: error.message || "Internal server error" });
+  }
+});
+
+export const meetingRouter = router;
