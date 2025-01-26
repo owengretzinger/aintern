@@ -8,7 +8,7 @@ export default defineConfig({
     host: true,
     proxy: {
       "/trpc": {
-        target: "http://localhost:3000",
+        target: "http://localhost:3001",
         changeOrigin: true,
       },
     },

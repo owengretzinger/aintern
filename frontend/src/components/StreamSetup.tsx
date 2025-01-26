@@ -14,7 +14,7 @@ export const StreamSetup = ({ canvasRef }: StreamSetupProps) => {
     // Initialize WebSocket connection
     const serverUrl = import.meta.env.VITE_RAILWAY_STATIC_URL
       ? `wss://${import.meta.env.VITE_RAILWAY_STATIC_URL}`
-      : 'ws://localhost:3000';
+      : 'ws://localhost:3001';
     socket.current = new WebSocket(serverUrl);
 
     // Initialize WebRTC peer connection

@@ -22,7 +22,7 @@ function getQueryClient() {
 }
 function getUrl() {
   const backendUrl =
-    import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+    import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
   return `${backendUrl}/trpc`;
 }
 export function TRPCProvider(

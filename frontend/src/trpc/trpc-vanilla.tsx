@@ -5,7 +5,7 @@ export const trpcVanilla = createTRPCProxyClient<AppRouter>({
   links: [
     httpBatchLink({
       url: `${
-        import.meta.env.VITE_BACKEND_URL || "http://localhost:3000"
+        import.meta.env.VITE_BACKEND_URL || "http://localhost:3001"
       }/trpc`,
       // You can pass any HTTP headers you wish here
       // async headers() {
