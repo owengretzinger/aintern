@@ -1,23 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import AgoraRTC, { createClient } from 'agora-rtc-sdk-ng';
-import { VideoPlayer } from './VideoPlayer';
+import React, { useEffect, useState } from "react";
+import AgoraRTC, { createClient } from "agora-rtc-sdk-ng";
+import { VideoPlayer } from "./VideoPlayer";
+import { Transcript } from "./Transcript";
 
-const APP_ID = 'fd724da3607e4f568c1775a94077234d';
-const TOKEN =
-  '007eJxTYNg3V7bdbWnmt1//RJ51yXc2z67fEHiSW+X/lYYDa5+U7X2mwJCWYm5kkpJobGZgnmqSZmpmkWxobm6aaGliYG5uZGyS8nPq1PSGQEaG/R7zmBkZIBDEZ2HITczMY2AAAEV4IsI=';
-const CHANNEL = 'main';
+const APP_ID = import.meta.env.VITE_AGORA_APP_ID;
+const TOKEN = import.meta.env.VITE_AGORA_TOKEN;
+const CHANNEL = "main";
 
 AgoraRTC.setLogLevel(4);
 
 let agoraCommandQueue = Promise.resolve();
 
-const createAgoraClient = ({
-  onVideoTrack,
-  onUserDisconnected,
-}) => {
+const createAgoraClient = ({ onVideoTrack, onUserDisconnected }) => {
   const client = createClient({
-    mode: 'rtc',
-    codec: 'vp8',
+    mode: "rtc",
+    codec: "vp8",
   });
 
   let tracks;
@@ -34,35 +31,36 @@ const createAgoraClient = ({
   };
 
   const connect = async (viewOnly) => {
-    await waitForConnectionState('DISCONNECTED');
+    await waitForConnectionState("DISCONNECTED");
 
-    const uid = await client.join(
-      APP_ID,
-      CHANNEL,
-      TOKEN,
-      null
-    );
+    const uid = await client.join(APP_ID, CHANNEL, TOKEN, null);
 
-    client.on('user-published', (user, mediaType) => {
+    client.on("user-published", (user, mediaType) => {
       client.subscribe(user, mediaType).then(() => {
-        if (mediaType === 'video') {
+        if (mediaType === "video") {
           onVideoTrack(user);
         }
       });
     });
 
-    client.on('user-left', (user) => {
+    client.on("user-left", (user) => {
       onUserDisconnected(user);
     });
 
-    if (viewOnly){
-      tracks = await AgoraRTC.createMicrophoneAndCameraTracks()
+    if (viewOnly) {
+      tracks = await AgoraRTC.createMicrophoneAndCameraTracks();
     } else {
-      // Create a screen track instead of microphone and camera
-      tracks = await AgoraRTC.createScreenVideoTrack({
-        audio: true, // optional, set to false if you don't need audio from the screen
-        video: true, // required to share the screen video
-      }, 'enable');
+      try {
+        // Create screen video track first
+        const screenTrack = await AgoraRTC.createScreenVideoTrack();
+        // Create microphone track separately
+        const audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+        tracks = [audioTrack, screenTrack];
+      } catch (error) {
+        console.error("Error creating screen share:", error);
+        // Fallback to camera if screen share fails
+        tracks = await AgoraRTC.createMicrophoneAndCameraTracks();
+      }
     }
 
     await client.publish(tracks);
@@ -74,7 +72,7 @@ const createAgoraClient = ({
   };
 
   const disconnect = async () => {
-    await waitForConnectionState('CONNECTED');
+    await waitForConnectionState("CONNECTED");
     client.removeAllListeners();
     for (let track of tracks) {
       track.stop();
@@ -93,6 +91,7 @@ const createAgoraClient = ({
 export const VideoRoom = () => {
   const [users, setUsers] = useState([]);
   const [uid, setUid] = useState(null);
+  const [viewOnly, setViewOnly] = useState(false);
 
   useEffect(() => {
     const onVideoTrack = (user) => {
@@ -112,16 +111,17 @@ export const VideoRoom = () => {
 
     const setup = async () => {
       const queryParams = new URLSearchParams(window.location.search);
-      const viewOnly = queryParams.get('viewOnly') === 'true';
+      const isViewOnly = queryParams.get("viewOnly") === "true";
+      setViewOnly(isViewOnly);
 
-      console.log('viewOnly:', viewOnly)
-      const { tracks, uid } = await connect(viewOnly);
+      console.log("viewOnly:", isViewOnly);
+      const { tracks, uid } = await connect(isViewOnly);
       setUid(uid);
       setUsers((previousUsers) => [
         ...previousUsers,
         {
           uid,
-          audioTrack: tracks[0], // optional audio track
+          audioTrack: tracks[0],
           videoTrack: tracks[1],
         },
       ]);
@@ -141,13 +141,13 @@ export const VideoRoom = () => {
   }, []);
 
   return (
-    <>
+    <div className="relative">
       {uid}
       <div
         style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
         {/* <div
@@ -156,11 +156,12 @@ export const VideoRoom = () => {
             gridTemplateColumns: 'repeat(2, 200px)',
           }}
         > */}
-          {users.map((user, i) => (
-            <VideoPlayer key={user.uid} user={user} z = {i} localUID = {uid}/>
-          ))}
+        {users.map((user, i) => (
+          <VideoPlayer key={user.uid} user={user} z={i} localUID={uid} />
+        ))}
         {/* </div> */}
       </div>
-    </>
+      <Transcript viewOnly={viewOnly} />
+    </div>
   );
 };

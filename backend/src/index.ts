@@ -19,7 +19,8 @@ app.use(
       "https://aintern.vercel.app", // Production
       "https://aintern-six.vercel.app", // Alternative production URL
       "http://localhost:5173", // Local development
-      "https://easy-walrus-dominant.ngrok-free.app", // Specific ngrok tunnel
+      "https://easy-walrus-dominant.ngrok-free.app", // Specific ngrok tunnel"
+      "https://d525-209-29-99-157.ngrok-free.app",
       /^https:\/\/.*\.ngrok-free\.app$/, // Any ngrok-free.app subdomain
     ],
     credentials: true,

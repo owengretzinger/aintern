@@ -16,7 +16,8 @@ export default defineConfig({
       "localhost",
       "*.ngrok-free.app", // Allow all ngrok-free.app subdomains
       "easy-walrus-dominant.ngrok-free.app", // Specific ngrok tunnel
-      "fffa-130-15-35-102.ngrok-free.app"
+      "fffa-130-15-35-102.ngrok-free.app",
+      "189f-209-29-99-157.ngrok-free.app", // Added new ngrok tunnel
     ],
   },
 });

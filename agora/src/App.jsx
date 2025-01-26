@@ -1,13 +1,14 @@
-import { useState } from 'react';
-import './App.css';
-import { VideoRoom } from './components/VideoRoom';
+import { useState } from "react";
+import "./App.css";
+import { VideoRoom } from "./components/VideoRoom";
+import { Transcript } from "./components/Transcript";
 
 function App() {
   // const [joined, setJoined] = useState(false);
   const [joined, setJoined] = useState(true);
 
   return (
-    <div className="App">
+    <div className="App relative">
       {/* <h1>WDJ Virtual Call</h1>
 
       {!joined && (
@@ -22,6 +23,7 @@ function App() {
             To Lobby
           </button> */}
           <VideoRoom />
+          <Transcript />
         </>
       )}
     </div>

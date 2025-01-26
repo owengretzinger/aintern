@@ -16,6 +16,7 @@ export const UI = ({ hidden = false }: UIProps) => {
       input.current.value = "";
     }
   };
+
   if (hidden) {
     return null;
   }
@@ -27,6 +28,8 @@ export const UI = ({ hidden = false }: UIProps) => {
           <h1 className="font-black text-xl">AI Intern</h1>
           <p>Your helpful AI assistant</p>
         </div>
+
+        {/* Camera and Green Screen Controls */}
         <div className="w-full flex flex-col items-end justify-center gap-4">
           <button
             onClick={() => setCameraZoomed(!cameraZoomed)}
@@ -90,6 +93,8 @@ export const UI = ({ hidden = false }: UIProps) => {
             </svg>
           </button>
         </div>
+
+        {/* Chat Input */}
         <div className="flex items-center gap-2 pointer-events-auto max-w-screen-sm w-full mx-auto">
           <input
             className="w-full placeholder:text-gray-800 placeholder:italic p-4 rounded-md bg-opacity-50 bg-white backdrop-blur-md"
