@@ -20,8 +20,8 @@ COPY tsconfig.json ./
 # Build TypeScript
 RUN npm run build
 
-# Create audios directory
-RUN mkdir -p audios
+# Create temp directory
+RUN mkdir -p temp
 
 # Set environment variables
 ENV PORT=3000

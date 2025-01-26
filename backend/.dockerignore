@@ -3,5 +3,5 @@ dist
 .env
 .git
 *.log
-audios/message_*
+temp/message_*
 @rhubarb-lip-sync 
