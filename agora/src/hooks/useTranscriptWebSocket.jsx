@@ -1,43 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-
-/**
- * @typedef {Object} Word
- * @property {string} text
- * @property {number} start_time
- * @property {number} end_time
- */
-
-/**
- * @typedef {Object} Transcript
- * @property {string|null} speaker
- * @property {string|null} speaker_id
- * @property {string} [transcription_provider_speaker]
- * @property {string|null} language
- * @property {number} original_transcript_id
- * @property {Word[]} words
- * @property {boolean} is_final
- */
-
-/**
- * @typedef {Object} TranscriptMessage
- * @property {string} bot_id
- * @property {Transcript} transcript
- */
-
-/**
- * @typedef {Object} Utterance
- * @property {string|null} speaker
- * @property {string} text
- * @property {boolean} isFinal
- */
+import { useEffect, useRef } from "react";
 
 export const useTranscriptWebSocket = (viewOnly = false) => {
   const RECONNECT_RETRY_INTERVAL_MS = 3000;
   const wsRef = useRef(null);
   const retryIntervalRef = useRef(null);
-
-  const [finalizedUtterances, setFinalizedUtterances] = useState([]);
-  const [currentUtterance, setCurrentUtterance] = useState(null);
 
   const connectWebSocket = () => {
     if (!viewOnly || wsRef.current) return;
@@ -105,35 +71,6 @@ export const useTranscriptWebSocket = (viewOnly = false) => {
             stack: error.stack
           });
         }
-
-        const transcript = message.transcript;
-        const text = transcript.words.map((word) => word.text).join(" ");
-
-        if (!transcript.is_final) {
-          console.log("Received interim transcript:", {
-            speaker: transcript.speaker,
-            text,
-          });
-          setCurrentUtterance({
-            speaker: transcript.speaker,
-            text,
-            isFinal: false,
-          });
-        } else {
-          console.log("Received final transcript:", {
-            speaker: transcript.speaker,
-            text,
-          });
-          setFinalizedUtterances((prev) => [
-            ...prev,
-            {
-              speaker: transcript.speaker,
-              text,
-              isFinal: true,
-            },
-          ]);
-          setCurrentUtterance(null);
-        }
       } catch (error) {
         console.error("Error processing WebSocket message:", error);
       }
@@ -175,16 +112,4 @@ export const useTranscriptWebSocket = (viewOnly = false) => {
       }
     };
   }, [viewOnly]);
-
-  // Combine finalized and current utterances
-  const utterances = useMemo(() => {
-    if (currentUtterance) {
-      return [...finalizedUtterances, currentUtterance];
-    }
-    return finalizedUtterances;
-  }, [finalizedUtterances, currentUtterance]);
-
-  return {
-    utterances,
-  };
 };
