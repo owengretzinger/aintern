@@ -1,7 +1,24 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useState } from "react";
+
 import './css/Home.css'
 
 const Home: React.FC = () => {
+    
+    const [interns, setInterns]= useState([])
+
+    useEffect(()=>{
+        const old= localStorage.getItem('interns')
+        console.log('retrieved:', old)
+
+        if (old) setInterns(JSON.parse(old))
+    },[])
+    
+    useEffect(()=>{
+        console.log(interns)
+        localStorage.setItem('interns', JSON.stringify(interns))
+    },[interns])
+
     const sendIntern = async (meeting_url: string) => {
         const response = await fetch('http://localhost:3000/api/summon/summon', {
             method: 'POST',
@@ -29,6 +46,9 @@ const Home: React.FC = () => {
 
             sendIntern(url).then((res)=>{
                 console.log(res)
+                if (res) if (res.id) {
+                    setInterns([...interns, res.id])
+                } 
             })
         }
 
@@ -36,6 +56,12 @@ const Home: React.FC = () => {
         setTimeout(()=>{
             input.classList.remove('active')
         }, 500)
+    }
+
+    const handleRedirect = (e:any) => {
+        const elem = e.target
+        const id = elem.id
+        window.location.pathname = `dashboard?intern=${id}`
     }
 
     const handleClick = () => {
@@ -50,9 +76,11 @@ const Home: React.FC = () => {
             </form>
             <p>sending intern ✅</p>
 
-            <div className="list">
-                
-            </div>
+            <ul className="list">
+                {interns.map(uid=>{
+                    return <li id = {uid} onClick={handleRedirect}>intern {uid} 👓📖</li>
+                })}
+            </ul>
 
         </section>;
 };

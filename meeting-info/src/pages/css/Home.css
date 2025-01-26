@@ -16,6 +16,7 @@
     box-shadow: 12px 12px 2px 1px rgba(47, 47, 47, 0.2);
     
     font-size: 1.5em;
+    font-weight: bold;
     
     padding: 20px;
     
@@ -43,12 +44,15 @@
     font-weight: bold;
 }
 
-.home .list{
-    /* height: 30vh; */
-    width: 35vw;
-    /* background-color: rgb(253, 253, 253);
-    
-    outline: none;
-    border: 5px solid black;
-    border-radius: 20px; */
+.home ul{
+    max-height: 50vh;
+}
+
+.home li{
+    font-size: 1.2em;
+    font-weight: 600;
+}
+.home li:hover{
+    cursor: pointer;
+    text-decoration: underline;
 }
