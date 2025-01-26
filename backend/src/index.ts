@@ -7,8 +7,9 @@ import { ConversationService } from "./services/conversation.js";
 import WebSocketService from "./services/websocket.js";
 import { env, CORS_ORIGINS } from "./config/env.js";
 
-import { summonRouter } from "./routers/summon";
+import { summonRouter } from "./routers/summon.js";
 import { memoryRouter } from "./routers/memory-upload.js";
+import { recallWebhookRouter } from "./routers/recall-webhook.router.js";
 
 const app = express();
 app.use(express.json());
@@ -58,7 +59,7 @@ app.post("/api/transcript", async (req, res) => {
           .join(" ") || "";
       console.log("Transcript text:", transcriptText);
 
-      if (transcriptText.toLowerCase().includes("alexa")) {
+      if (transcriptText.toLowerCase().includes("iris")) {
         console.log("Wake word detected");
 
         try {
@@ -85,6 +86,7 @@ app.use("/api/chat", chatRouter);
 app.use("/api/meeting", meetingRouter);
 app.use("/api/memory", memoryRouter);
 app.use("/api/summon", summonRouter);
+app.use("/api/recall", recallWebhookRouter);
 
 // Start server
 server.listen(env.PORT, () => {

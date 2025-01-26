@@ -1,7 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import './css/Dashboard.css'
-// import { useState } from "react";
 
 const Dashboard: React.FC = () => {
 

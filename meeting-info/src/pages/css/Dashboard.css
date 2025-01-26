@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .dashboard{
     gap: 20px;
     
@@ -45,3 +46,114 @@
     font-size: 0.8em;
     margin-top: 5px;
 }
+=======
+.dashboard-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-container h1 {
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.transcripts-list {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.transcript-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.transcript-card:hover {
+  transform: translateY(-2px);
+}
+
+.transcript-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.transcript-header h3 {
+  margin: 0;
+  color: #333;
+}
+
+.transcript-date {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.transcript-summary {
+  margin-bottom: 1.5rem;
+}
+
+.transcript-summary h4 {
+  color: #444;
+  margin-bottom: 0.5rem;
+}
+
+.transcript-summary p {
+  color: #666;
+  line-height: 1.5;
+}
+
+.summary-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8f8f8;
+  border-radius: 4px;
+}
+
+.analyze-button {
+  padding: 0.5rem 1rem;
+  background-color: #ffb441;
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.analyze-button:hover {
+  background-color: #ffa020;
+}
+
+.analysis-status {
+  color: #666;
+  font-style: italic;
+}
+
+.transcript-content {
+  border-top: 1px solid #eee;
+  padding-top: 1rem;
+}
+
+.transcript-content h4 {
+  color: #444;
+  margin-bottom: 0.5rem;
+}
+
+.transcript-content pre {
+  background: #f8f8f8;
+  padding: 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #333;
+} 
+>>>>>>> 31732f112a1f53d8ebf72b94e48b967918c8d8d5
