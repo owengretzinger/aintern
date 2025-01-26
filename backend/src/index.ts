@@ -6,6 +6,8 @@ import http from "http";
 import OpenAI from "openai";
 import { chatRouter } from "./routers/chat";
 import { meetingRouter } from "./routers/meeting";
+
+import { summonRouter } from "./routers/summon";
 dotenv.config();
 
 const openai = new OpenAI({
@@ -126,6 +128,8 @@ app.post("/api/transcript", async (req: Request, res: Response) => {
 // Mount routers
 app.use("/api/chat", chatRouter);
 app.use("/api/meeting", meetingRouter);
+
+app.use("/api/summon", summonRouter);
 
 // Create HTTP server
 const server = http.createServer(app);

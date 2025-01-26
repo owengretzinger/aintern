@@ -1,0 +1,54 @@
+.home{
+    background-color: #ffb441;
+}
+
+.home input {
+    width: 40vw;
+    height: 2rem;
+    
+    background-color: rgb(253, 253, 253);
+    
+    outline: none;
+    border: 5px solid black;
+    border-radius: 20px;
+    
+    color: black;
+    box-shadow: 12px 12px 2px 1px rgba(47, 47, 47, 0.2);
+    
+    font-size: 1.5em;
+    
+    padding: 20px;
+    
+    transition: 0.5s ease;
+}
+
+.home input.active {
+    box-shadow: 2px 2px 2px 1px rgba(47, 47, 47, 0.2);
+    transform: scale(0.9);
+}
+
+.home input::placeholder {
+    color: rgb(120, 120, 120);
+}
+
+.home p {
+    opacity: 0;
+    transition: 0.5s;
+}
+
+.home p.active {
+    opacity: 1;
+    margin-top: 20px;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.home .list{
+    /* height: 30vh; */
+    width: 35vw;
+    /* background-color: rgb(253, 253, 253);
+    
+    outline: none;
+    border: 5px solid black;
+    border-radius: 20px; */
+}

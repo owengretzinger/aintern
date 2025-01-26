@@ -1,0 +1,22 @@
+section{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  width: 100vw;
+  height: 100vh;
+}
+
+header h1{
+  position: fixed;
+  top: 20px;
+  left: 20px;
+
+  font-weight: bold;
+  font-size: 5rem;
+
+  text-shadow: 5px 5px #37373753;
+  /* box-shadow: 12px 12px 2px 1px rgba(47, 47, 47, 0.2); */
+
+}
