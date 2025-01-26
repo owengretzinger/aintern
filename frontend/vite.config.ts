@@ -18,6 +18,9 @@ export default defineConfig({
       "easy-walrus-dominant.ngrok-free.app", // Specific ngrok tunnel
       "fffa-130-15-35-102.ngrok-free.app",
       "189f-209-29-99-157.ngrok-free.app", // Added new ngrok tunnel
+      "full-liked-ray.ngrok-free.app",
+      "12b6-209-29-99-157.ngrok-free.app",
+      "591b-209-29-99-157.ngrok-free.app"
     ],
   },
 });

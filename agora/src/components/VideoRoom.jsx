@@ -47,26 +47,28 @@ const createAgoraClient = ({ onVideoTrack, onUserDisconnected }) => {
       onUserDisconnected(user);
     });
 
-    if (isViewOnly) {
-      tracks = await AgoraRTC.createMicrophoneAndCameraTracks();
-    } else {
+    if (!isViewOnly) {
       try {
         // Create screen video track first
-        const screenTrack = await AgoraRTC.createScreenVideoTrack();
-        // Create microphone track separately
-        const audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
-        tracks = [audioTrack, screenTrack];
+        const screenTrack = await AgoraRTC.createScreenVideoTrack(
+          {
+            audio: false,
+            video: true,
+          },
+          "enable"
+        );
+        tracks = screenTrack;
+        await client.publish(tracks);
       } catch (error) {
         console.error("Error creating screen share:", error);
         // Fallback to camera if screen share fails
         tracks = await AgoraRTC.createMicrophoneAndCameraTracks();
+        await client.publish(tracks);
       }
     }
 
-    await client.publish(tracks);
-
     return {
-      tracks,
+      tracks: tracks || [],
       uid,
     };
   };

@@ -24,6 +24,8 @@ app.use(
       "http://localhost:5173", // Local development
       "https://easy-walrus-dominant.ngrok-free.app", // Specific ngrok tunnel"
       "https://d525-209-29-99-157.ngrok-free.app",
+      "https://full-liked-ray.ngrok-free.app",
+      "https://591b-209-29-99-157.ngrok-free.app",
       /^https:\/\/.*\.ngrok-free\.app$/, // Any ngrok-free.app subdomain
     ],
     credentials: true,
@@ -32,7 +34,7 @@ app.use(
   })
 );
 
-const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
+const port = process.env.PORT ? parseInt(process.env.PORT) : 3001;
 
 // Add test route
 app.get("/", (_req: Request, res: Response) => {
@@ -41,6 +43,84 @@ app.get("/", (_req: Request, res: Response) => {
     message: "Backend is running!",
     timestamp: new Date().toISOString(),
   });
+});
+
+// Add transcript endpoint
+app.post("/api/transcript", async (req: Request, res: Response) => {
+  try {
+    const transcriptData = req.body;
+
+    console.log("Transcript data received:", transcriptData);
+
+    // Broadcast transcript to all connected WebSocket clients
+    clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify(transcriptData));
+      }
+    });
+
+    // Handle wake word detection
+    if (transcriptData.transcript) {
+      const transcriptText =
+        transcriptData.transcript.words
+          ?.map((w: { text: string }) => w.text)
+          .join(" ") || "";
+      console.log("Transcript text:", transcriptText);
+
+      if (transcriptText.toLowerCase().includes("alexa")) {
+        console.log("Wake word detected");
+        console.log("Sending request to chat endpoint", transcriptText);
+        
+        try {
+          // Use chat endpoint directly
+          const response = await fetch(
+            `http://localhost:${port}/api/chat/chat`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                message: transcriptText,
+                sessionId: "default",
+              }),
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(`Chat request failed: ${response.statusText}`);
+          }
+
+          const chatResponse = await response.json();
+          console.log("Chat response:", chatResponse);
+
+          if (chatResponse.messages && Array.isArray(chatResponse.messages)) {
+            // Broadcast AI response to all connected clients
+            clients.forEach((client) => {
+              if (client.readyState === WebSocket.OPEN) {
+                client.send(
+                  JSON.stringify({
+                    type: "ai_response",
+                    messages: chatResponse.messages,
+                  })
+                );
+              }
+            });
+            console.log("AI response sent to clients");
+          } else {
+            console.error("Invalid chat response format:", chatResponse);
+          }
+        } catch (error) {
+          console.error("Error processing chat request:", error);
+        }
+      }
+    }
+
+    res.status(200).json({ status: "ok" });
+  } catch (error) {
+    console.error("Error processing transcript:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 
 // Mount routers
@@ -59,59 +139,18 @@ const clients = new Set<WebSocket>();
 // WebSocket connection handler
 wss.on("connection", (ws: WebSocket) => {
   clients.add(ws);
-
-  ws.on("message", async (message: Buffer) => {
-    try {
-      const data = JSON.parse(message.toString());
-
-      // If this is a transcript message
-      if (data.transcript) {
-        const transcriptText =
-          data.transcript.words?.map((w: { text: string }) => w.text).join(" ") || "";
-
-        // Check for wake word
-        if (transcriptText.toLowerCase().includes("alexa")) {
-          // Use chat endpoint directly
-          const response = await fetch("http://localhost:" + port + "/api/chat/chat", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              message: transcriptText,
-              sessionId: "default",
-            }),
-          });
-          
-          const chatResponse = await response.json();
-
-          // Broadcast response to all connected clients
-          clients.forEach((client) => {
-            if (client.readyState === WebSocket.OPEN) {
-              client.send(
-                JSON.stringify({
-                  type: "ai_response",
-                  messages: chatResponse.messages,
-                })
-              );
-            }
-          });
-        }
-      }
-    } catch (error) {
-      console.error("Error processing WebSocket message:", error);
-    }
-  });
+  console.log("Client connected");
 
   ws.on("close", () => {
     clients.delete(ws);
+    console.log("Client disconnected");
   });
 });
 
 console.log(
   `WebSocket server running on ws://${
     process.env.VITE_RAILWAY_STATIC_URL || "localhost"
-  }:8080`
+  }:${port}`
 );
 
 // Change the listen call to use the http server

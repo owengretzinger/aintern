@@ -34,7 +34,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 export const useTranscriptWebSocket = (viewOnly = false) => {
   const RECONNECT_RETRY_INTERVAL_MS = 3000;
   const wsRef = useRef(null);
-  const backendWsRef = useRef(null);
   const retryIntervalRef = useRef(null);
 
   const [finalizedUtterances, setFinalizedUtterances] = useState([]);
@@ -43,18 +42,13 @@ export const useTranscriptWebSocket = (viewOnly = false) => {
   const connectWebSocket = () => {
     if (!viewOnly || wsRef.current) return;
 
+    console.log("Attempting to connect to transcript WebSocket...");
     wsRef.current = new WebSocket(
       "wss://meeting-data.bot.recall.ai/api/v1/transcript"
     );
 
-    // Connect to backend WebSocket
-    console.log(import.meta.env.VITE_BACKEND_WS_URL);
-    backendWsRef.current = new WebSocket(
-      `wss://${import.meta.env.VITE_BACKEND_WS_URL || "ws://localhost:3000"}`
-    );
-
     wsRef.current.onopen = () => {
-      console.log("Connected to WebSocket server");
+      console.log("Connected to transcript WebSocket server");
       if (retryIntervalRef.current) {
         clearInterval(retryIntervalRef.current);
         retryIntervalRef.current = null;
@@ -64,22 +58,72 @@ export const useTranscriptWebSocket = (viewOnly = false) => {
     wsRef.current.onmessage = async (event) => {
       try {
         const message = JSON.parse(event.data);
+        console.log("Received message from transcript WebSocket:", {
+          messageType: message.type,
+          hasTranscript: !!message.transcript,
+          transcript: message.transcript,
+        });
 
-        // Forward transcript to backend
-        if (backendWsRef.current?.readyState === WebSocket.OPEN) {
-          backendWsRef.current.send(JSON.stringify(message));
+        // Forward transcript to backend via POST request
+        try {
+          console.log("Attempting to forward transcript to backend...", {
+            url: `${import.meta.env.VITE_BACKEND_URL}/api/transcript`,
+            message
+          });
+          
+          const response = await fetch(
+            `${import.meta.env.VITE_BACKEND_URL}/api/transcript`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(message),
+            }
+          );
+
+          const responseText = await response.text();
+          console.log("Backend response:", {
+            status: response.status,
+            statusText: response.statusText,
+            body: responseText
+          });
+
+          if (!response.ok) {
+            console.warn(
+              "Failed to forward transcript to backend:",
+              response.status,
+              responseText
+            );
+          } else {
+            console.log("Successfully forwarded transcript to backend");
+          }
+        } catch (error) {
+          console.error("Error forwarding transcript to backend:", {
+            error,
+            message: error.message,
+            stack: error.stack
+          });
         }
 
         const transcript = message.transcript;
         const text = transcript.words.map((word) => word.text).join(" ");
 
         if (!transcript.is_final) {
+          console.log("Received interim transcript:", {
+            speaker: transcript.speaker,
+            text,
+          });
           setCurrentUtterance({
             speaker: transcript.speaker,
             text,
             isFinal: false,
           });
         } else {
+          console.log("Received final transcript:", {
+            speaker: transcript.speaker,
+            text,
+          });
           setFinalizedUtterances((prev) => [
             ...prev,
             {

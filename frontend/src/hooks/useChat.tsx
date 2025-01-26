@@ -4,6 +4,7 @@ import type { Message } from "../../../backend/src/types/shared";
 interface ChatContextType {
   chat: (message: string) => Promise<void>;
   message: Message | null;
+  setMessage: (message: Message | null) => void;
   onMessagePlayed: () => void;
   loading: boolean;
   cameraZoomed: boolean;
@@ -59,6 +60,7 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
       value={{
         chat: sendMessage,
         message,
+        setMessage,
         onMessagePlayed: () => {
           setMessages((messages) => messages.slice(1));
         },
