@@ -23,6 +23,8 @@ export default defineConfig({
       "591b-209-29-99-157.ngrok-free.app",
       "90e3-130-15-35-136.ngrok-free.app",
       "full-liked-ray.ngrok-free.app",
+      "falcon-enough-corgi.ngrok-free.app",
+      "fa26-130-15-35-136.ngrok-free.app",
     ],
   },
 });
