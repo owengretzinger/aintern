@@ -4,7 +4,7 @@ import { VideoPlayer } from './VideoPlayer';
 
 const APP_ID = 'fd724da3607e4f568c1775a94077234d';
 const TOKEN =
-  '007eJxTYAgw+JS2ji3+XHXTuofL5PmO3l4e0nkhIEtR+jrzAw3eTQkKDGkp5kYmKYnGZgbmqSZppmYWyYbm5qaJliYG5uZGxiYpHr5T0xsCGRm2dM1kYIRCEJ+FITcxM4+BAQAOfB47';
+  '007eJxTYNg3V7bdbWnmt1//RJ51yXc2z67fEHiSW+X/lYYDa5+U7X2mwJCWYm5kkpJobGZgnmqSZmpmkWxobm6aaGliYG5uZGyS8nPq1PSGQEaG/R7zmBkZIBDEZ2HITczMY2AAAEV4IsI=';
 const CHANNEL = 'main';
 
 AgoraRTC.setLogLevel(4);
@@ -62,7 +62,7 @@ const createAgoraClient = ({
       tracks = await AgoraRTC.createScreenVideoTrack({
         audio: true, // optional, set to false if you don't need audio from the screen
         video: true, // required to share the screen video
-      });
+      }, 'enable');
     }
 
     await client.publish(tracks);
@@ -157,7 +157,7 @@ export const VideoRoom = () => {
           }}
         > */}
           {users.map((user, i) => (
-            <VideoPlayer key={user.uid} user={user} z = {i}/>
+            <VideoPlayer key={user.uid} user={user} z = {i} localUID = {uid}/>
           ))}
         {/* </div> */}
       </div>

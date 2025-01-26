@@ -3,7 +3,7 @@ import { Canvas } from "@react-three/fiber";
 import { Leva } from "leva";
 import { Experience } from "./components/Experience";
 import { UI } from "./components/UI";
-import { StreamSetup } from "./components/StreamSetup";
+// import { StreamSetup } from "./components/StreamSetup";
 import { useRef } from "react";
 
 function App() {
@@ -17,7 +17,7 @@ function App() {
       <Canvas ref={canvasRef} shadows camera={{ position: [0, 0, 1], fov: 30 }}>
         <Experience />
       </Canvas>
-      <StreamSetup canvasRef={canvasRef} />
+      {/* <StreamSetup canvasRef={canvasRef} /> */}
     </>
   );
 }
