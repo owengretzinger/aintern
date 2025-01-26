@@ -61,7 +61,7 @@ const Home: React.FC = () => {
     const handleRedirect = (e:any) => {
         const elem = e.target
         const id = elem.id
-        window.location.pathname = `dashboard?intern=${id}`
+        window.location.assign(`dashboard/?intern=${id}`);
     }
 
     const handleClick = () => {

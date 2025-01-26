@@ -1,0 +1,47 @@
+.dashboard{
+    gap: 20px;
+    
+    display: flex;
+    flex-direction: row;
+    
+    align-items: end;
+}
+
+.dashboard .part .empty{
+    position: absolute;
+
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+}
+
+.dashboard .part .summary{
+    font-size: 1.5rem;
+    width: calc(100% - 40px);
+}
+
+.dashboard .part{
+    height: 80vh;
+    width: 30%;
+    
+    background-color: white;
+    
+    border-radius: 20px;
+    border: 5px solid black;
+
+    overflow-y: scroll;
+    position: relative;
+}
+
+.dashboard .text{
+    background-color: rgb(216, 216, 216);
+    margin: 10px;
+    padding: 10px;
+    
+    border-radius: 10px;
+}
+
+.dashboard .text p{
+    font-size: 0.8em;
+    margin-top: 5px;
+}
