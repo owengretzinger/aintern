@@ -20,7 +20,9 @@ export default defineConfig({
       "189f-209-29-99-157.ngrok-free.app", // Added new ngrok tunnel
       "full-liked-ray.ngrok-free.app",
       "12b6-209-29-99-157.ngrok-free.app",
-      "591b-209-29-99-157.ngrok-free.app"
+      "591b-209-29-99-157.ngrok-free.app",
+      "90e3-130-15-35-136.ngrok-free.app",
+      "full-liked-ray.ngrok-free.app",
     ],
   },
 });

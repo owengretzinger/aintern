@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import AgoraRTC, { createClient } from "agora-rtc-sdk-ng";
 import { VideoPlayer } from "./VideoPlayer";
-import { Transcript } from "./Transcript";
+import { useTranscriptWebSocket } from "../hooks/useTranscriptWebSocket";
 
 const APP_ID = import.meta.env.VITE_AGORA_APP_ID;
 const TOKEN = import.meta.env.VITE_AGORA_TOKEN;
@@ -95,6 +95,8 @@ export const VideoRoom = () => {
   const [uid, setUid] = useState(null);
   const [isViewOnly, setIsViewOnly] = useState(false);
 
+  useTranscriptWebSocket(isViewOnly);
+
   useEffect(() => {
     const onVideoTrack = (user) => {
       setUsers((previousUsers) => [...previousUsers, user]);
@@ -152,18 +154,10 @@ export const VideoRoom = () => {
           alignItems: "center",
         }}
       >
-        {/* <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, 200px)',
-          }}
-        > */}
         {users.map((user, i) => (
           <VideoPlayer key={user.uid} user={user} z={i} localUID={uid} />
         ))}
-        {/* </div> */}
       </div>
-      <Transcript isViewOnly={isViewOnly} />
     </div>
   );
 };

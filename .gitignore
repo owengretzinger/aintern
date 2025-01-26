@@ -45,3 +45,5 @@ coverage
 .vercel
 
 test.txt
+
+temp/
