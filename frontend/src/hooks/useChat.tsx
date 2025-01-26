@@ -7,8 +7,6 @@ interface ChatContextType {
   setMessage: (message: Message | null) => void;
   onMessagePlayed: () => void;
   loading: boolean;
-  cameraZoomed: boolean;
-  setCameraZoomed: (zoomed: boolean) => void;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -21,7 +19,6 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<Message | null>(null);
-  const [cameraZoomed, setCameraZoomed] = useState(true);
 
   const sendMessage = async (message: string) => {
     setIsLoading(true);
@@ -65,8 +62,6 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
           setMessages((messages) => messages.slice(1));
         },
         loading: isLoading,
-        cameraZoomed,
-        setCameraZoomed,
       }}
     >
       {children}
