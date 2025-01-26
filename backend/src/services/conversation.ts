@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import { env } from "../config/env.js";
 import { AudioService } from "./audio.js";
 import type { ConversationHistory, Message } from "../types/shared.js";
+import { KnowledgeService } from "./documents.js";
 
 export const openai = new OpenAI({
   apiKey: env.OPENAI_API_KEY,
@@ -10,9 +11,11 @@ export const openai = new OpenAI({
 export class ConversationService {
   private sessionHistories = new Map<string, ConversationHistory[]>();
   private audioService: AudioService;
+  private knowledgeService: KnowledgeService;
 
   constructor() {
     this.audioService = new AudioService();
+    this.knowledgeService = new KnowledgeService();
   }
 
   async processChat(userMessage: string, sessionId: string = "default") {
@@ -31,7 +34,22 @@ The different animations are: Talking_0, Talking_1, Talking_2, Crying, Laughing,
       ]);
     }
 
+    // Get conversation history
     const history = this.sessionHistories.get(sessionId)!;
+
+    // Search for relevant documents
+    const relevantDocs = await this.knowledgeService.searchSimilarDocuments(
+      userMessage
+    );
+
+    // Add relevant context to the conversation
+    if (relevantDocs.length > 0) {
+      const context = relevantDocs.map((doc) => doc.content).join("\n\n");
+      history.push({
+        role: "system",
+        content: `Relevant context:\n${context}\n\nUse this information to help answer the user's question if relevant.`,
+      });
+    }
 
     // Add user message to history
     history.push({ role: "user", content: userMessage });
@@ -84,4 +102,4 @@ The different animations are: Talking_0, Talking_1, Talking_2, Crying, Laughing,
       history.unshift(systemMessage);
     }
   }
-} 
+}

@@ -1,14 +1,18 @@
-section{
+body {
+  background-color: #ffb441;
+}
+
+section {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
-  width: 100vw;
-  height: 100vh;
+  height: calc(100vh - 100px);
+  width: 100%;
+  margin-top: -50px;
 }
 
-header h1{
+header h1 {
   position: fixed;
   top: 20px;
   left: 20px;
@@ -18,5 +22,45 @@ header h1{
 
   text-shadow: 5px 5px #37373753;
   /* box-shadow: 12px 12px 2px 1px rgba(47, 47, 47, 0.2); */
+}
 
+.app-container {
+  min-height: 100vh;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: none;
+}
+
+.nav-brand h1 {
+  margin: 0;
+  font-weight: bold;
+  font-size: 5rem;
+  text-shadow: 5px 5px #37373753;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: black;
+  font-weight: 500;
+  font-size: 1.2rem;
+  transition: opacity 0.2s ease;
+}
+
+.nav-links a:hover {
+  opacity: 0.7;
+}
+
+main {
+  padding: 0;
 }

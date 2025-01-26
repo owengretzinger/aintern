@@ -9,7 +9,7 @@ router.post("/summon", async (req, res) => {
         const response = await fetch('https://us-west-2.recall.ai/api/v1/bot', {
             method: 'POST',
             headers: {
-                'Authorization': 'Token cb6ebef5f3ff2440f1f35d7ce776dec97bed1f14',
+                'Authorization': 'Token ' + process.env.RECALL_API_KEY,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
