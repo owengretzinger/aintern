@@ -8,6 +8,7 @@ import WebSocketService from "./services/websocket.js";
 import { env, CORS_ORIGINS } from "./config/env.js";
 
 import { summonRouter } from "./routers/summon";
+import { memoryRouter } from "./routers/memory-upload.js";
 
 const app = express();
 app.use(express.json());
@@ -59,9 +60,11 @@ app.post("/api/transcript", async (req, res) => {
 
       if (transcriptText.toLowerCase().includes("alexa")) {
         console.log("Wake word detected");
-        
+
         try {
-          const messages = await conversationService.processChat(transcriptText);
+          const messages = await conversationService.processChat(
+            transcriptText
+          );
           wsService.broadcastAIResponse(messages);
           console.log("AI response sent to clients");
         } catch (error) {
@@ -80,6 +83,7 @@ app.post("/api/transcript", async (req, res) => {
 // Mount routers
 app.use("/api/chat", chatRouter);
 app.use("/api/meeting", meetingRouter);
+app.use("/api/memory", memoryRouter);
 app.use("/api/summon", summonRouter);
 
 // Start server

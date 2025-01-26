@@ -3,7 +3,7 @@ import './css/Home.css'
 
 const Home: React.FC = () => {
     const sendIntern = async (meeting_url: string) => {
-        const response = await fetch('http://localhost:3000/api/summon/summon', {
+        const response = await fetch('http://localhost:3001/api/summon/summon', {
             method: 'POST',
             headers: {
                 'Content-Type':' application/json'
