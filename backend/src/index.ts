@@ -1,7 +1,7 @@
 import cors from "cors";
 import dotenv from "dotenv";
-import express from "express";
-import WebSocket from "ws";
+import express, { Request, Response } from "express";
+import { WebSocketServer, WebSocket } from "ws";
 import http from "http";
 import OpenAI from "openai";
 import { chatRouter } from "./routers/chat";
@@ -35,7 +35,7 @@ app.use(
 const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
 // Add test route
-app.get("/", (_req, res) => {
+app.get("/", (_req: Request, res: Response) => {
   res.json({
     status: "ok",
     message: "Backend is running!",
@@ -51,23 +51,23 @@ app.use("/api/meeting", meetingRouter);
 const server = http.createServer(app);
 
 // Create WebSocket server
-const wss = new WebSocket.Server({ server });
+const wss = new WebSocketServer({ server });
 
 // Store connected clients
 const clients = new Set<WebSocket>();
 
 // WebSocket connection handler
-wss.on("connection", (ws) => {
+wss.on("connection", (ws: WebSocket) => {
   clients.add(ws);
 
-  ws.on("message", async (message) => {
+  ws.on("message", async (message: Buffer) => {
     try {
       const data = JSON.parse(message.toString());
 
       // If this is a transcript message
       if (data.transcript) {
         const transcriptText =
-          data.transcript.words?.map((w: any) => w.text).join(" ") || "";
+          data.transcript.words?.map((w: { text: string }) => w.text).join(" ") || "";
 
         // Check for wake word
         if (transcriptText.toLowerCase().includes("alexa")) {
