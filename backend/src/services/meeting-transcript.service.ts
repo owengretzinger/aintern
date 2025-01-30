@@ -1,14 +1,15 @@
 import { createClient } from "@supabase/supabase-js";
 import { env } from "../config/env.js";
-import { getBotTranscript } from "./recall.js";
+import { RecallService } from "./recall.service.js";
 
 const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_KEY);
+const recallService = new RecallService();
 
 export class MeetingTranscriptService {
   async storeTranscript(botId: string, summary: string) {
     try {
-      const transcript = await getBotTranscript(botId);
-      
+      const transcript = await recallService.getBotTranscript(botId);
+
       const { data, error } = await supabase
         .from("meeting_transcripts")
         .insert([
@@ -59,4 +60,4 @@ export class MeetingTranscriptService {
       throw error;
     }
   }
-} 
+}

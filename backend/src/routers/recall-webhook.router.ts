@@ -2,15 +2,13 @@ import express from "express";
 import { z } from "zod";
 import { MeetingTranscriptService } from "../services/meeting-transcript.service.js";
 import { KnowledgeService } from "../services/documents.js";
-import {
-  analyzeBotMedia,
-  getAnalysisJob,
-  getIntelligenceResults,
-} from "../services/recall.js";
+import { RecallService, TranscriptEntry } from "../services/recall.service.js";
+import { openai } from "../services/ai.js";
 
 const router = express.Router();
 const transcriptService = new MeetingTranscriptService();
 const knowledgeService = new KnowledgeService();
+const recallService = new RecallService();
 
 // Start analysis for a bot
 router.post("/analyze/:botId", async (req, res) => {
@@ -22,7 +20,7 @@ router.post("/analyze/:botId", async (req, res) => {
     const { botId } = schema.parse(req.params);
 
     // Start the analysis job
-    const { job_id } = await analyzeBotMedia(botId);
+    const { job_id } = await recallService.analyzeBotMedia(botId);
 
     res.json({
       status: "success",
@@ -44,7 +42,7 @@ router.get("/analyze/job/:jobId", async (req, res) => {
     });
 
     const { jobId } = schema.parse(req.params);
-    const jobStatus = await getAnalysisJob(jobId);
+    const jobStatus = await recallService.getAnalysisJob(jobId);
 
     res.json(jobStatus);
   } catch (error: any) {
@@ -61,7 +59,7 @@ router.get("/intelligence/:botId", async (req, res) => {
     });
 
     const { botId } = schema.parse(req.params);
-    const results = await getIntelligenceResults(botId);
+    const results = await recallService.getIntelligenceResults(botId);
 
     res.json(results);
   } catch (error: any) {
@@ -121,28 +119,52 @@ router.post("/webhook", async (req, res) => {
     const bot_id = data.bot_id;
 
     if (event === "bot.status_change" && data.status?.code === "call_ended") {
-      // Start analysis when the call ends
       try {
-        await analyzeBotMedia(bot_id);
-        console.log(`Started analysis for bot ${bot_id}`);
-      } catch (error) {
-        console.error(`Failed to start analysis for bot ${bot_id}:`, error);
-      }
-    } else if (event === "analysis_done") {
-      // Get the intelligence results which include the summary
-      const intelligence = await getIntelligenceResults(bot_id);
-      const summary = intelligence?.["assembly_ai.summary"] || "";
+        // Get transcript
+        const transcript = await recallService.getBotTranscript(bot_id);
 
-      // Store transcript and summary in database
-      await transcriptService.storeTranscript(bot_id, summary);
+        // Generate summary using OpenAI
+        const transcriptText = transcript
+          .map(
+            (entry: TranscriptEntry) =>
+              `${entry.speaker}: ${entry.words.map((w) => w.text).join(" ")}`,
+          )
+          .join("\n");
 
-      // Store transcript in knowledge base for context
-      if (summary) {
+        const completion = await openai.chat.completions.create({
+          model: "gpt-4o", // DO NOT CHANGE THIS
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are a helpful assistant that generates concise but informative meeting summaries. Focus on key points, decisions, and action items.",
+            },
+            {
+              role: "user",
+              content: `Please provide a summary of this meeting transcript:\n\n${transcriptText}`,
+            },
+          ],
+          temperature: 0.7,
+          max_tokens: 500,
+        });
+
+        const summary = completion.choices[0].message.content;
+        if (!summary) throw new Error("Failed to generate summary");
+
+        // Store transcript and summary in database
+        await transcriptService.storeTranscript(bot_id, summary);
+
+        // Store summary in knowledge base for context
         await knowledgeService.addDocument(summary, {
           type: "meeting_summary",
           bot_id: bot_id,
           date: new Date().toISOString(),
         });
+      } catch (error) {
+        console.error(
+          `Failed to process meeting data for bot ${bot_id}:`,
+          error,
+        );
       }
     }
 

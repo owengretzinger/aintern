@@ -1,58 +1,99 @@
-.home{
-    background-color: #ffb441;
+.home {
+  background-color: #ffb441;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 100px);
+}
+
+.home form {
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .home input {
-    width: 40vw;
-    height: 2rem;
-    
-    background-color: rgb(253, 253, 253);
-    
-    outline: none;
-    border: 5px solid black;
-    border-radius: 20px;
-    
-    color: black;
-    box-shadow: 12px 12px 2px 1px rgba(47, 47, 47, 0.2);
-    
-    font-size: 1.5em;
-    font-weight: bold;
-    
-    padding: 20px;
-    
-    transition: 0.5s ease;
+  width: 40vw;
+  height: 2rem;
+
+  background-color: rgb(253, 253, 253);
+
+  outline: none;
+  border: 5px solid black;
+  border-radius: 20px;
+
+  color: black;
+  box-shadow: 12px 12px 2px 1px rgba(47, 47, 47, 0.2);
+
+  font-size: 1.5em;
+  font-weight: bold;
+
+  padding: 20px;
+
+  transition: 0.5s ease;
+  margin-bottom: 1rem;
 }
 
 .home input.active {
-    box-shadow: 2px 2px 2px 1px rgba(47, 47, 47, 0.2);
-    transform: scale(0.9);
+  box-shadow: 2px 2px 2px 1px rgba(47, 47, 47, 0.2);
+  transform: scale(0.9);
 }
 
 .home input::placeholder {
-    color: rgb(120, 120, 120);
+  color: rgb(120, 120, 120);
 }
 
 .home p {
-    opacity: 0;
-    transition: 0.5s;
+  color: black;
+  text-align: center;
+  height: 1.5em;
+  margin-top: 1rem;
 }
 
-.home p.active {
-    opacity: 1;
-    margin-top: 20px;
-    color: #ffffff;
-    font-weight: bold;
+.home ul {
+  max-height: 50vh;
 }
 
-.home ul{
-    max-height: 50vh;
+.home li {
+  font-size: 1.2em;
+  font-weight: 600;
+}
+.home li:hover {
+  cursor: pointer;
+  text-decoration: underline;
 }
 
-.home li{
-    font-size: 1.2em;
-    font-weight: 600;
+.summary-container,
+.transcript-container {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
-.home li:hover{
-    cursor: pointer;
-    text-decoration: underline;
+
+.summary-container h3,
+.transcript-container h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: black;
+  font-weight: bold;
+}
+
+.summary-container p,
+.transcript-entry {
+  margin-bottom: 1rem;
+  line-height: 1.5;
+  color: black;
+  font-size: 1.1em;
+}
+
+.transcript-entry strong {
+  color: black;
+  font-weight: bold;
+  margin-right: 0.5rem;
 }

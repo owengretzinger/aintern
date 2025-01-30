@@ -10,7 +10,7 @@ export const useTranscriptWebSocket = (viewOnly = false) => {
 
     console.log("Attempting to connect to transcript WebSocket...");
     wsRef.current = new WebSocket(
-      "wss://meeting-data.bot.recall.ai/api/v1/transcript"
+      "wss://meeting-data.bot.recall.ai/api/v1/transcript",
     );
 
     wsRef.current.onopen = () => {
@@ -34,9 +34,9 @@ export const useTranscriptWebSocket = (viewOnly = false) => {
         try {
           console.log("Attempting to forward transcript to backend...", {
             url: `${import.meta.env.VITE_BACKEND_URL}/api/transcript`,
-            message
+            message,
           });
-          
+
           const response = await fetch(
             `${import.meta.env.VITE_BACKEND_URL}/api/transcript`,
             {
@@ -44,22 +44,27 @@ export const useTranscriptWebSocket = (viewOnly = false) => {
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify(message),
-            }
+              body: JSON.stringify({
+                event: "bot.transcription",
+                data: {
+                  transcript: message,
+                },
+              }),
+            },
           );
 
           const responseText = await response.text();
           console.log("Backend response:", {
             status: response.status,
             statusText: response.statusText,
-            body: responseText
+            body: responseText,
           });
 
           if (!response.ok) {
             console.warn(
               "Failed to forward transcript to backend:",
               response.status,
-              responseText
+              responseText,
             );
           } else {
             console.log("Successfully forwarded transcript to backend");
@@ -68,7 +73,7 @@ export const useTranscriptWebSocket = (viewOnly = false) => {
           console.error("Error forwarding transcript to backend:", {
             error,
             message: error.message,
-            stack: error.stack
+            stack: error.stack,
           });
         }
       } catch (error) {
@@ -90,14 +95,14 @@ export const useTranscriptWebSocket = (viewOnly = false) => {
     };
   };
 
-  const attemptReconnect = () => {
-    if (!retryIntervalRef.current && viewOnly) {
-      retryIntervalRef.current = window.setInterval(() => {
-        console.log("Attempting to reconnect to WebSocket...");
-        connectWebSocket();
-      }, RECONNECT_RETRY_INTERVAL_MS);
-    }
-  };
+  // const attemptReconnect = () => {
+  //   if (!retryIntervalRef.current && viewOnly) {
+  //     retryIntervalRef.current = window.setInterval(() => {
+  //       console.log("Attempting to reconnect to WebSocket...");
+  //       connectWebSocket();
+  //     }, RECONNECT_RETRY_INTERVAL_MS);
+  //   }
+  // };
 
   useEffect(() => {
     if (viewOnly) {

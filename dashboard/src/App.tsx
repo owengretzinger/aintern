@@ -11,12 +11,12 @@ const App: React.FC = () => {
       <div className="app-container">
         <nav className="navbar">
           <div className="nav-brand">
-            <h1>AIntern</h1>
+            <h1>(A)Intern</h1>
           </div>
           <div className="nav-links">
-            <Link to="/">Home</Link>
-            <Link to="/dashboard">Dashboard</Link>
-            <Link to="/documents">Documents</Link>
+            <Link to="/">Join Meeting</Link>
+            <Link to="/dashboard">Meeting History</Link>
+            <Link to="/documents">Knowledge Base</Link>
           </div>
         </nav>
 

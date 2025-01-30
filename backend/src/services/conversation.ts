@@ -38,9 +38,8 @@ The different animations are: Talking_0, Talking_1, Talking_2, Crying, Laughing,
     const history = this.sessionHistories.get(sessionId)!;
 
     // Search for relevant documents
-    const relevantDocs = await this.knowledgeService.searchSimilarDocuments(
-      userMessage
-    );
+    const relevantDocs =
+      await this.knowledgeService.searchSimilarDocuments(userMessage);
 
     // Add relevant context to the conversation
     if (relevantDocs.length > 0) {
@@ -81,7 +80,7 @@ The different animations are: Talking_0, Talking_1, Talking_2, Crying, Laughing,
       try {
         const { audio, lipsync } = await this.audioService.processAudioMessage(
           i,
-          messages[i].text
+          messages[i].text,
         );
         messages[i].audio = audio;
         messages[i].lipsync = lipsync;

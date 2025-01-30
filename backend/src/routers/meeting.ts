@@ -1,8 +1,9 @@
 import express from "express";
 import { z } from "zod";
-import { createBot, getBotStatus, getBotTranscript } from "../services/recall.js";
+import { RecallService } from "../services/recall.service.js";
 
 const router = express.Router();
+const recallService = new RecallService();
 
 router.post("/create-bot", async (req, res) => {
   try {
@@ -11,7 +12,7 @@ router.post("/create-bot", async (req, res) => {
     });
 
     const { meetingUrl } = schema.parse(req.body);
-    const result = await createBot(meetingUrl);
+    const result = await recallService.createBot(meetingUrl);
     res.json(result);
   } catch (error: any) {
     console.error("Error creating bot:", error);
@@ -26,7 +27,7 @@ router.get("/bot-status/:botId", async (req, res) => {
     });
 
     const { botId } = schema.parse(req.params);
-    const result = await getBotStatus(botId);
+    const result = await recallService.getBotStatus(botId);
     res.json(result);
   } catch (error: any) {
     console.error("Error getting bot status:", error);
@@ -41,7 +42,7 @@ router.get("/bot-transcript/:botId", async (req, res) => {
     });
 
     const { botId } = schema.parse(req.params);
-    const result = await getBotTranscript(botId);
+    const result = await recallService.getBotTranscript(botId);
     res.json(result);
   } catch (error: any) {
     console.error("Error getting bot transcript:", error);

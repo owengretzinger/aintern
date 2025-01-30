@@ -1,85 +1,115 @@
 import express from "express";
+import { MeetingService } from "../services/meeting.service.js";
+import { RecallService, TranscriptEntry } from "../services/recall.service.js";
+import { openai } from "../services/ai.js";
 
-const router = express.Router();
+export const summonRouter = express.Router();
+const meetingService = new MeetingService();
+const recallService = new RecallService();
 
-router.post("/summon", async (req, res) => {
-    try {
-        const meeting_url = req.body.meeting_url 
-
-        const response = await fetch('https://us-west-2.recall.ai/api/v1/bot', {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Token ' + process.env.RECALL_API_KEY,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                meeting_url: req.body.meeting_url,
-                bot_name: 'Iris the Intern',
-                output_media: {
-                    camera: {
-                        kind: 'webpage',
-                        config: {
-                            url: 'https://a82e-130-15-35-204.ngrok-free.app/?viewOnly=true',
-                        }
-                    }
-                },
-                variant: {
-                    google_meet: "web_4_core"
-                },
-                transcription_options: {
-                    provider: "meeting_captions"
-                }
-            })
-        })
-    
-        res.json(await response.json())
-
-    } catch (e) {
-        console.warn(e)
-        res.status(500)
+summonRouter.post("/summon", async (req, res) => {
+  try {
+    const { meeting_url } = req.body;
+    if (!meeting_url) {
+      res.status(400).json({ error: "Missing meeting_url" });
+      return;
     }
+
+    // Create bot in recall.ai
+    const bot = await recallService.createBot(meeting_url);
+
+    // Create meeting in our database
+    const meeting = await meetingService.createMeeting(bot.id);
+
+    res.json({ meeting, bot });
+  } catch (e) {
+    console.warn(e);
+    res.status(500).json({ error: "Failed to create meeting" });
+  }
 });
 
+summonRouter.get("/meetings", async (_req, res) => {
+  try {
+    // Check and update status of in-progress meetings
+    await meetingService.checkAndUpdateMeetings();
 
-router.post('/transcript', async (req, res) => {
-    const id = req.body.id
-    console.log('id:', id)
-    try{
-        const response = await fetch(`https://us-west-2.recall.ai/api/v1/bot/${id}/transcript/`, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Token ' + process.env.RECALL_API_KEY,
-                'accept': 'application/json'
-            },
-        })
-        
-        const out = await response.json()
+    // Get all meetings
+    const meetings = await meetingService.getAllMeetings();
 
-        const summaryResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                model: 'gpt-4',
-                messages: [
-                    { role: 'system', content: 'Summarize the following JSON transcript in a few sentences.' },
-                    { role: 'user', content: JSON.stringify(out) }
-                ]
-            })
-        });
-        
-        const summaryData = await summaryResponse.json();
-        const summary = summaryData.choices?.[0]?.message?.content || 'Summary unavailable';
-        
-        res.json({ transcript: out, summary });
-    } catch(e){
-        console.warn(e)
-        res.status(500)
+    res.json(meetings);
+  } catch (error) {
+    console.error("Error fetching meetings:", error);
+    res.status(500).json({ error: "Failed to fetch meetings" });
+  }
+});
+
+summonRouter.post(
+  "/transcript",
+  async (req: express.Request, res: express.Response) => {
+    try {
+      const response = await fetch(
+        "https://us-west-2.recall.ai/api/v1/bot/" + req.body.id + "/transcript",
+        {
+          headers: {
+            Authorization: "Token " + process.env.RECALL_API_KEY,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      res.json(await response.json());
+    } catch (e) {
+      console.warn(e);
+      res.status(500);
     }
-})
+  },
+);
 
+summonRouter.get("/get-summary/:botId", async (req, res) => {
+  try {
+    const { botId } = req.params;
+    console.log("Getting summary for bot:", botId);
 
+    // Get transcript
+    const transcript = await recallService.getBotTranscript(botId);
+    console.log("Got transcript:", transcript);
 
-export const summonRouter = router;
+    // Generate summary using OpenAI
+    let summary = null;
+    try {
+      const transcriptText = transcript
+        .map(
+          (entry: TranscriptEntry) =>
+            `${entry.speaker}: ${entry.words.map((w) => w.text).join(" ")}`,
+        )
+        .join("\n");
+
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4",
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are a helpful assistant that generates concise but informative meeting summaries. Focus on key points, decisions, and action items.",
+          },
+          {
+            role: "user",
+            content: `Please provide a summary of this meeting transcript:\n\n${transcriptText}`,
+          },
+        ],
+        temperature: 0.7,
+        max_tokens: 500,
+      });
+
+      summary = completion.choices[0].message.content;
+      console.log("Generated summary:", summary);
+    } catch (error) {
+      console.error("Error generating summary:", error);
+    }
+
+    res.json({ transcript, summary });
+  } catch (error) {
+    console.error("Error getting meeting summary:", error);
+    res.status(500).json({ error: "Failed to get meeting summary" });
+  }
+});

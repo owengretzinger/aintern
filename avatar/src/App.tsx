@@ -17,11 +17,11 @@ function App() {
 
     // Connect to backend WebSocket
     wsRef.current = new WebSocket(
-      `wss://${import.meta.env.VITE_BACKEND_WS_URL}`
+      `wss://${import.meta.env.VITE_BACKEND_WS_URL}`,
     );
     console.log(
       "Attempting WebSocket connection to:",
-      import.meta.env.VITE_BACKEND_WS_URL
+      import.meta.env.VITE_BACKEND_WS_URL,
     );
 
     wsRef.current.onopen = () => {
@@ -44,24 +44,30 @@ function App() {
 
         if (data.type === "ai_response" && data.messages) {
           console.log(
-            `Processing ${data.messages.length} AI response messages`
+            `Processing ${data.messages.length} AI response messages:`,
+            data.messages,
           );
           // Process each message in sequence
           for (const [index, message] of data.messages.entries()) {
             console.log(
-              `Processing message ${index + 1}/${data.messages.length}`
+              `Processing message ${index + 1}/${data.messages.length}:`,
+              message,
             );
-            
+
             try {
               // Create and prepare audio before setting message state
+              if (!message.audio) {
+                console.warn("Message has no audio data:", message);
+                continue;
+              }
               const audioBlob = await fetch(
-                `data:audio/mp3;base64,${message.audio}`
+                `data:audio/mp3;base64,${message.audio}`,
               ).then((r) => r.blob());
               const audioUrl = URL.createObjectURL(audioBlob);
               console.log(`Created blob URL for audio: ${audioUrl}`);
 
               audioRef.current!.src = audioUrl;
-              
+
               // Set up audio event handlers before setting message state
               const audioPlayPromise = new Promise<void>((resolve, reject) => {
                 if (audioRef.current) {
@@ -84,7 +90,7 @@ function App() {
 
               // Wait for audio to finish
               await audioPlayPromise;
-              
+
               // Clean up
               URL.revokeObjectURL(audioUrl);
             } catch (error) {

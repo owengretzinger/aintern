@@ -10,7 +10,7 @@ async function setupRhubarb() {
   const os = platform();
   let downloadUrl;
 
-  console.log('os:', os)
+  console.log("os:", os);
   switch (os) {
     case "darwin":
       downloadUrl = `https://github.com/DanielSWolf/rhubarb-lip-sync/releases/download/v${RHUBARB_VERSION}/rhubarb-lip-sync-${RHUBARB_VERSION}-macOS.zip`;
@@ -50,11 +50,11 @@ async function setupRhubarb() {
   // Extract the zip file
   if (os === "win32") {
     execSync(
-      `powershell Expand-Archive -Path "${zipPath}" -DestinationPath "${tempDir}" -Force`
+      `powershell Expand-Archive -Path "${zipPath}" -DestinationPath "${tempDir}" -Force`,
     );
     const extractedDir = path.join(
       tempDir,
-      `Rhubarb-Lip-Sync-${RHUBARB_VERSION}-Windows`
+      `Rhubarb-Lip-Sync-${RHUBARB_VERSION}-Windows`,
     );
     fs.renameSync(extractedDir, rhubarbDir);
   } else {
@@ -63,7 +63,7 @@ async function setupRhubarb() {
       tempDir,
       `Rhubarb-Lip-Sync-${RHUBARB_VERSION}-${
         os === "darwin" ? "macOS" : "Linux"
-      }`
+      }`,
     );
     fs.renameSync(extractedDir, rhubarbDir);
   }

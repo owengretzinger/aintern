@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from "react";
 
-export const VideoPlayer = ({ user , z, localUID}) => {
+export const VideoPlayer = ({ user, z, localUID }) => {
   const videoRef = useRef(null);
   const audioRef = useRef(null);
 
@@ -9,7 +9,7 @@ export const VideoPlayer = ({ user , z, localUID}) => {
       user.videoTrack.play(videoRef.current);
     }
     if (user.audioTrack && user.uid != localUID) {
-      user.audioTrack.play(audioRef.current)
+      user.audioTrack.play(audioRef.current);
     }
 
     return () => {
@@ -24,7 +24,20 @@ export const VideoPlayer = ({ user , z, localUID}) => {
 
   return (
     <div>
-      <video ref={videoRef} style={{ width: '100%', height: '100%', objectFit: 'cover', position:'absolute', left: 0, top: 0, zIndex: -z}} autoPlay playsInline />
+      <video
+        ref={videoRef}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          position: "absolute",
+          left: 0,
+          top: 0,
+          zIndex: -z,
+        }}
+        autoPlay
+        playsInline
+      />
       <audio ref={audioRef} autoPlay />
     </div>
   );

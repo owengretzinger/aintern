@@ -21,7 +21,7 @@ app.use(
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-  })
+  }),
 );
 
 // Create HTTP server
@@ -45,16 +45,16 @@ app.get("/", (_req, res) => {
 // Add transcript endpoint
 app.post("/api/transcript", async (req, res) => {
   try {
-    const transcriptData = req.body;
-    console.log("Transcript data received:", transcriptData);
+    const { event, data } = req.body;
+    console.log("Transcript webhook received:", { event, data });
 
-    // Broadcast transcript to all connected WebSocket clients
-    wsService.broadcastTranscript(transcriptData);
+    if (event === "bot.transcription" && data?.transcript?.transcript) {
+      // Broadcast transcript to all connected WebSocket clients
+      wsService.broadcastTranscript(data.transcript.transcript);
 
-    // Handle wake word detection
-    if (transcriptData.transcript) {
+      // Handle wake word detection
       const transcriptText =
-        transcriptData.transcript.words
+        data.transcript.transcript.words
           ?.map((w: { text: string }) => w.text)
           .join(" ") || "";
       console.log("Transcript text:", transcriptText);
@@ -63,9 +63,8 @@ app.post("/api/transcript", async (req, res) => {
         console.log("Wake word detected");
 
         try {
-          const messages = await conversationService.processChat(
-            transcriptText
-          );
+          const messages =
+            await conversationService.processChat(transcriptText);
           wsService.broadcastAIResponse(messages);
           console.log("AI response sent to clients");
         } catch (error) {
@@ -76,7 +75,7 @@ app.post("/api/transcript", async (req, res) => {
 
     res.status(200).json({ status: "ok" });
   } catch (error) {
-    console.error("Error processing transcript:", error);
+    console.error("Error processing transcript webhook:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });

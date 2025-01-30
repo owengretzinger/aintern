@@ -1,88 +1,59 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
-
-import './css/Home.css'
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./css/Home.css";
 
 const Home: React.FC = () => {
-    
-    const [interns, setInterns]= useState([])
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-    useEffect(()=>{
-        const old= localStorage.getItem('interns')
-        console.log('retrieved:', old)
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const input = e.currentTarget.querySelector("input") as HTMLInputElement;
+    const url = input.value;
 
-        if (old) setInterns(JSON.parse(old))
-    },[])
-    
-    useEffect(()=>{
-        console.log(interns)
-        localStorage.setItem('interns', JSON.stringify(interns))
-    },[interns])
+    if (!url) return;
 
-    const sendIntern = async (meeting_url: string) => {
-        const response = await fetch('http://localhost:3001/api/summon/summon', {
-            method: 'POST',
-            headers: {
-                'Content-Type':' application/json'
-            },
-            body: JSON.stringify({
-                meeting_url
-            })
-        })
+    try {
+      setLoading(true);
+      setError(null);
+      input.classList.add("active");
 
-        return await response.json()
+      const response = await fetch("http://localhost:3001/api/summon/summon", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          meeting_url: url,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create meeting");
+      }
+
+      // Clear input and redirect to dashboard
+      input.value = "";
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create meeting");
+    } finally {
+      setLoading(false);
+      input.classList.remove("active");
     }
+  };
 
-    const handleSubmit = (e: any) => {
-        e.preventDefault()
-        const input = e.target.querySelector('input')
-        const url = input.value
-
-        const p = document.querySelector('p')
-        if (p) p.classList.add('active')
-
-        console.log('sending intern to:', url)
-        if(url != '' && url){
-
-            sendIntern(url).then((res)=>{
-                console.log(res)
-                if (res) if (res.id) {
-                    setInterns([...interns, res.id])
-                } 
-            })
-        }
-
-        input.classList.add('active')
-        setTimeout(()=>{
-            input.classList.remove('active')
-        }, 500)
-    }
-
-    const handleRedirect = (e:any) => {
-        const elem = e.target
-        const id = elem.id
-        window.location.assign(`dashboard/?intern=${id}`);
-    }
-
-    const handleClick = () => {
-        const p = document.querySelector('p')
-        if (p) p.classList.remove('active')
-    }
-
-    return <section className="home" onClick={handleClick}>
-        
-            <form onSubmit={handleSubmit}>
-                <input type="text" placeholder="enter meeting url"/>
-            </form>
-            <p>sending intern ✅</p>
-
-            <ul className="list">
-                {interns.map(uid=>{
-                    return <li id = {uid} onClick={handleRedirect}>intern {uid} 👓📖</li>
-                })}
-            </ul>
-
-        </section>;
+  return (
+    <section className="home">
+      <form onSubmit={handleSubmit}>
+        <input type="text" placeholder="enter meeting url" disabled={loading} />
+        <p className="active">
+          {loading ? "Sending intern to meeting..." : error ? error : "\u00A0"}
+        </p>
+      </form>
+    </section>
+  );
 };
 
 export default Home;

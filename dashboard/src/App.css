@@ -2,30 +2,10 @@ body {
   background-color: #ffb441;
 }
 
-section {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: calc(100vh - 100px);
-  width: 100%;
-  margin-top: -50px;
-}
-
-header h1 {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-
-  font-weight: bold;
-  font-size: 5rem;
-
-  text-shadow: 5px 5px #37373753;
-  /* box-shadow: 12px 12px 2px 1px rgba(47, 47, 47, 0.2); */
-}
-
 .app-container {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .navbar {
@@ -34,6 +14,11 @@ header h1 {
   align-items: center;
   padding: 1rem 2rem;
   background: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
 }
 
 .nav-brand h1 {
@@ -62,5 +47,8 @@ header h1 {
 }
 
 main {
+  flex: 1;
+  margin-top: 100px; /* Height of navbar */
   padding: 0;
+  overflow-y: auto;
 }

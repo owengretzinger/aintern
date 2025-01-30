@@ -18,7 +18,10 @@ router.post("/chat", async (req, res) => {
       throw new Error("No message provided");
     }
 
-    const messages = await conversationService.processChat(userMessage, sessionId);
+    const messages = await conversationService.processChat(
+      userMessage,
+      sessionId,
+    );
     res.json({ messages });
   } catch (error: any) {
     console.error("Error in chat endpoint:", error);

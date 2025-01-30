@@ -25,6 +25,8 @@ export default defineConfig({
       "full-liked-ray.ngrok-free.app",
       "falcon-enough-corgi.ngrok-free.app",
       "fa26-130-15-35-136.ngrok-free.app",
+      "28a7-24-141-35-108.ngrok-free.app",
+      "b981-24-141-35-108.ngrok-free.app",
     ],
   },
 });

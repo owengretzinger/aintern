@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
 interface StreamSetupProps {
   canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -7,19 +7,20 @@ interface StreamSetupProps {
 export const StreamSetup = ({ canvasRef }: StreamSetupProps) => {
   const peerConnection = useRef<RTCPeerConnection | null>(null);
   const socket = useRef<WebSocket | null>(null);
-  const [connectionState, setConnectionState] = useState<string>('Disconnected');
-  const [wsState, setWsState] = useState<string>('Connecting...');
+  const [connectionState, setConnectionState] =
+    useState<string>("Disconnected");
+  const [wsState, setWsState] = useState<string>("Connecting...");
 
   useEffect(() => {
     // Initialize WebSocket connection
     const serverUrl = import.meta.env.VITE_RAILWAY_STATIC_URL
       ? `wss://${import.meta.env.VITE_RAILWAY_STATIC_URL}`
-      : 'ws://localhost:3001';
+      : "ws://localhost:3001";
     socket.current = new WebSocket(serverUrl);
 
     // Initialize WebRTC peer connection
     peerConnection.current = new RTCPeerConnection({
-      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
     });
 
     const pc = peerConnection.current;
@@ -37,11 +38,11 @@ export const StreamSetup = ({ canvasRef }: StreamSetupProps) => {
           try {
             await pc.addIceCandidate(new RTCIceCandidate(data.candidate));
           } catch (e) {
-            console.error('Error adding ICE candidate:', e);
+            console.error("Error adding ICE candidate:", e);
           }
         }
       } catch (e) {
-        console.error('Error handling WebSocket message:', e);
+        console.error("Error handling WebSocket message:", e);
       }
     };
 
@@ -54,27 +55,27 @@ export const StreamSetup = ({ canvasRef }: StreamSetupProps) => {
 
     // Log connection state changes
     pc.onconnectionstatechange = () => {
-      console.log('Connection state:', pc.connectionState);
+      console.log("Connection state:", pc.connectionState);
       setConnectionState(pc.connectionState);
     };
 
     pc.oniceconnectionstatechange = () => {
-      console.log('ICE connection state:', pc.iceConnectionState);
+      console.log("ICE connection state:", pc.iceConnectionState);
     };
 
     // WebSocket state handlers
     ws.onopen = () => {
-      console.log('WebSocket connected');
-      setWsState('Connected');
+      console.log("WebSocket connected");
+      setWsState("Connected");
       startStreaming();
     };
 
     ws.onclose = () => {
-      setWsState('Disconnected');
+      setWsState("Disconnected");
     };
 
     ws.onerror = () => {
-      setWsState('Error');
+      setWsState("Error");
     };
 
     // Get canvas stream and create offer
@@ -91,7 +92,7 @@ export const StreamSetup = ({ canvasRef }: StreamSetupProps) => {
         await pc.setLocalDescription(offer);
         ws.send(JSON.stringify({ offer: pc.localDescription }));
       } catch (error) {
-        console.error('Error creating offer:', error);
+        console.error("Error creating offer:", error);
       }
     };
 

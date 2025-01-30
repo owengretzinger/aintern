@@ -23,14 +23,17 @@ export const ChatProvider = ({ children }: ChatProviderProps) => {
   const sendMessage = async (message: string) => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:3001"}/api/chat/chat`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL || "http://localhost:3001"}/api/chat/chat`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ message }),
         },
-        body: JSON.stringify({ message }),
-      });
-      
+      );
+
       if (!response.ok) {
         throw new Error("Failed to send message");
       }

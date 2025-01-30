@@ -21,5 +21,6 @@ export const CORS_ORIGINS = [
   "https://aintern-six.vercel.app",
   "http://localhost:5173",
   "http://localhost:4000",
+  "http://localhost:4001",
   /^https:\/\/.*\.ngrok-free\.app$/,
 ];

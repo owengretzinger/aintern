@@ -44,4 +44,4 @@ class WebSocketService {
   }
 }
 
-export default WebSocketService; 
+export default WebSocketService;

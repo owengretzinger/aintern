@@ -42,7 +42,7 @@ export class AudioService {
     // Read results
     const audio = await this.audioToBase64(fileName);
     const lipsync = await this.readJsonTranscript(
-      path.join(AUDIO_DIR, `${baseFileName}.json`)
+      path.join(AUDIO_DIR, `${baseFileName}.json`),
     );
 
     return { audio, lipsync };
@@ -50,7 +50,7 @@ export class AudioService {
 
   private async cleanupFiles(baseFileName: string) {
     const files = [".mp3", ".wav", ".json"].map((ext) =>
-      path.join(AUDIO_DIR, `${baseFileName}${ext}`)
+      path.join(AUDIO_DIR, `${baseFileName}${ext}`),
     );
 
     for (const file of files) {
@@ -78,23 +78,23 @@ export class AudioService {
   private async generateLipSync(message: number) {
     const time = new Date().getTime();
     console.log(`Starting conversion for message ${message}`);
-    
+
     await execCommand(
       `ffmpeg -y -i ${path.join(AUDIO_DIR, `message_${message}.mp3`)} ${path.join(
         AUDIO_DIR,
-        `message_${message}.wav`
-      )}`
+        `message_${message}.wav`,
+      )}`,
     );
-    
+
     console.log(`Conversion done in ${new Date().getTime() - time}ms`);
-    
+
     await execCommand(
       `./@rhubarb-lip-sync/rhubarb -f json -o ${path.join(
         AUDIO_DIR,
-        `message_${message}.json`
-      )} ${path.join(AUDIO_DIR, `message_${message}.wav`)} -r phonetic`
+        `message_${message}.json`,
+      )} ${path.join(AUDIO_DIR, `message_${message}.wav`)} -r phonetic`,
     );
-    
+
     console.log(`Lip sync done in ${new Date().getTime() - time}ms`);
   }
 
@@ -107,4 +107,4 @@ export class AudioService {
     const data = await fs.readFile(file);
     return data.toString("base64");
   }
-} 
+}

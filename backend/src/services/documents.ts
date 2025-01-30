@@ -76,4 +76,4 @@ export class KnowledgeService {
 
     if (error) throw error;
   }
-} 
+}

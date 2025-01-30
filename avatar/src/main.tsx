@@ -12,5 +12,5 @@ ReactDOM.createRoot(rootElement).render(
     <ChatProvider>
       <App />
     </ChatProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

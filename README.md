@@ -1,46 +1,125 @@
 # (A)Intern
 
-Watch the demo:
+A 3D AI meeting assistant that joins your video calls, responds to questions in real-time, and takes meeting notes automatically.
 
-[![Watch the demo](https://img.youtube.com/vi/qoR3mv23wPs/maxresdefault.jpg)](https://youtu.be/qoR3mv23wPs?si=Ro5gzIvniRAQinu_)
+https://github.com/user-attachments/assets/e6afa2e4-1626-4273-97b0-04f05b5f4d0c
 
-## Inspiration
-The inspiration behind (A)Intern comes from the need to have an efficient, virtual assistant that can automate meeting tasks and help users by providing real-time answers, note-taking, and follow-up actions during video calls.
+## Overview
 
-## What it does
-Iris is a 3D virtual AI intern that can join meetings on platforms like Zoom, Google Meet, or MS Teams when provided with a URL. It listens to discussions, answers questions out loud, takes notes, and generates meeting summaries. Additionally, it can recall past meetings, access uploaded documents, and provide context when needed.
+(A)Intern features a 3D virtual AI assistant named Iris that can:
 
+<details>
+<summary>Join meetings on platforms like Google Meet by simply providing a URL</summary>
 
+![Enter URL](https://github.com/user-attachments/assets/b32e5e28-5a92-465c-b4f5-8e3de35239e6)
 
-## How we built it
-**Avatar:** Built using a combination of Ready Player Me for 3D modeling, Mixamo for animations, ElevenLabs for voice synthesis, and Rhubarb Lip Sync for lip-syncing.
+</details>
 
-**Meeting Bot:** Integrated the Recall.ai API for meeting bot capabilities and utilized OpenAI for natural language generation.
+<details>
+<summary>Answer questions in real-time with natural voice responses and lifelike expressions</summary>
 
-**Tech Stack:** The project uses a React frontend, Express backend, and Supabase database. It also makes extensive use of web sockets for communication between various components.
+![In Meeting](https://github.com/user-attachments/assets/c33e46a5-2e69-4d7d-be45-7f330ee2c62a)
 
-##  Challenges we ran into
-- Recall.ai uses a system of streaming in the content of a web page as the bot's camera feed. However, Recall's headless browser cannot render Three.js. We spent half of the hackathon to finally come to a workaround: streaming the page as a video into another page, which Recall looks at to stream into the meeting.
-- Ensuring the bot could respond in real-time to questions during meetings while maintaining context from past meetings.
-- Syncing meeting notes, generating accurate summaries, and creating a smooth user experience for video conferencing platforms.
-- Reducing latency between asking a question and receiving Iris' answer
+</details>
 
-## Accomplishments that we're proud of
-- (A)Intern can automatically join meetings by just providing a URL, making it easy for users to integrate.
-- It’s able to answer questions in real-time during meetings, providing value right away.
-- The avatar’s lip-syncing with voice responses creates an interactive and lifelike experience for users.
-- The integration of meeting summaries, transcripts, and contextual awareness is a significant achievement.
+<details>
+<summary>Access and reference uploaded company documents for contextual responses</summary>
 
-## What we learned
-- Managing real-time interactions with an AI while ensuring smooth execution across different platforms requires a lot of coordination and testing.
-- Augmenting AI’s knowledge through document uploads and maintaining contextual awareness is a critical aspect for providing helpful responses.
-- The importance of a solid backend structure for efficient data handling and scalability.
+![image](https://github.com/user-attachments/assets/61af77c3-0eec-46a8-8a6e-e3c37aaaa59a)
 
-## What's next for (A)Intern
-- Expanding (A)Intern’s capabilities by testing with more meeting platforms.
-- Adding enhanced AI features like predictive follow-ups, task management, and personalized meeting actions.
-- Reducing latency.
-- Improving avatar customization and voice diversity for a more tailored experience.
-- Exploring deep learning for better question understanding and context awareness.
+</details>
 
-![image](https://github.com/user-attachments/assets/8ab3c7c2-d9d8-4ec2-80c0-844642df8c61)
+<details>
+<summary>Take automated meeting notes and generate summaries</summary>
+
+![Transcript and Summary](https://github.com/user-attachments/assets/21d8f06f-1fc1-40ef-aad4-90c305af949a)
+
+</details>
+
+## Project Structure
+
+The project consists of four main components:
+
+- `/avatar` - 3D avatar rendering and animation system
+- `/backend` - Express server handling AI, meeting management, and data processing
+- `/dashboard` - React-based user interface for managing meetings and documents
+- `/video-stream` - Video streaming service for meeting integration
+
+## Technical Architecture
+
+### Avatar System
+
+- Ready Player Me for 3D modeling
+- Mixamo for natural animations
+- ElevenLabs for voice synthesis
+- Rhubarb Lip Sync for lip synchronization
+- Three.js for 3D rendering
+
+### Meeting Integration
+
+- Recall.ai API for meeting bot capabilities
+- Custom video streaming solution for Three.js compatibility
+- Real-time transcription and response system
+- OpenAI for natural language processing
+
+### Core Technologies
+
+- React/Vite frontends
+- Express.js backend
+- Supabase database
+- WebSocket communication
+
+## Technical Implementation
+
+The system works through the following flow:
+
+1. User submits a meeting URL through the dashboard
+2. Meeting bot joins the call via Recall.ai
+3. Questions are transcribed in real-time
+4. Backend processes queries with relevant document context
+5. AI generates responses with voice synthesis and lip-sync
+6. Avatar stream is piped back into the meeting
+
+### Latency Handling
+
+The current system has approximately 10 seconds of latency due to our unique technical solution:
+
+- Recall's headless browser can't directly render Three.js
+- Solution: Convert avatar to video stream first
+- Trade-off: Higher latency for better visual experience
+
+![Flow Diagram](https://github.com/user-attachments/assets/d4c49d0a-0bc0-48bf-8da4-7904f82d9f1f)
+
+## Development
+
+### Prerequisites
+
+- Node.js
+- pnpm
+- ngrok (for local development with Recall.ai)
+
+### Local Development with ngrok
+
+When testing the meeting integration locally, you'll need ngrok to expose your local server to the internet. This is required because Recall.ai needs to communicate with publicly accessible endpoints.
+
+1. Install ngrok: https://ngrok.com/download
+2. Start ngrok on port 3001 (or your backend port):
+   ```bash
+   ngrok http 3001
+   ```
+3. Update your environment variables to use the ngrok URL:
+   - In `backend/.env`, set `PUBLIC_URL` to your ngrok URL
+   - In `video-stream/.env`, update the WebSocket URL accordingly
+
+### Setup
+
+1. Clone the repository
+2. Install dependencies in each directory:
+   ```bash
+   cd avatar && pnpm install
+   cd ../backend && pnpm install
+   cd ../dashboard && pnpm install
+   cd ../video-stream && pnpm install
+   ```
+3. Configure environment variables (see `.env.example` in each directory)
+4. Start the development servers

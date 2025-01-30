@@ -55,7 +55,7 @@ const createAgoraClient = ({ onVideoTrack, onUserDisconnected }) => {
             audio: false,
             video: true,
           },
-          "enable"
+          "enable",
         );
         tracks = screenTrack;
         await client.publish(tracks);
@@ -104,7 +104,7 @@ export const VideoRoom = () => {
 
     const onUserDisconnected = (user) => {
       setUsers((previousUsers) =>
-        previousUsers.filter((u) => u.uid !== user.uid)
+        previousUsers.filter((u) => u.uid !== user.uid),
       );
     };
 

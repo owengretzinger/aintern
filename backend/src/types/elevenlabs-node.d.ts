@@ -35,4 +35,4 @@ declare module "elevenlabs-node" {
   export default ElevenLabs;
 }
 
-declare module 'elevenlabs-node';
+declare module "elevenlabs-node";
